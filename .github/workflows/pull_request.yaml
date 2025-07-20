@@ -1,0 +1,44 @@
+name: Create Pull Request
+
+on:
+  push:
+    branches:
+      - 'features/**'
+      - 'fix/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Fetch develop branch
+        run: git fetch origin develop:refs/remotes/origin/develop
+      - name: Get first commit message
+        id: first_commit
+        run: |
+          FIRST_COMMIT_MSG=$(git log origin/develop..HEAD --pretty=format:%s | tail -n 1)
+          if [ -z "$FIRST_COMMIT_MSG" ]; then
+            FIRST_COMMIT_MSG="Auto PR: ${GITHUB_REF#refs/heads/} to develop"
+          fi
+          echo "message=$FIRST_COMMIT_MSG" >> $GITHUB_OUTPUT
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          PR_EXISTS=$(gh pr list --base develop --head "$BRANCH_NAME" --json number --jq 'length')
+          if [ "$PR_EXISTS" -eq 0 ]; then
+            if [ -f .github/pull_request_template.md ]; then
+              BODY=$(cat .github/pull_request_template.md)
+              gh pr create --base develop --head "$BRANCH_NAME" --title "${{ steps.first_commit.outputs.message }}" --body "$BODY" --draft
+            else
+              gh pr create --base develop --head "$BRANCH_NAME" --title "${{ steps.first_commit.outputs.message }}" --fill --draft
+            fi
+          else
+            echo "PR already exists."
+          fi

@@ -1,0 +1,79 @@
+{
+  "name": "@mito-shogi/tsshogi-jsa",
+  "version": "0.0.1",
+  "description": "将棋連盟ライブ中継アプリの棋譜データをパースするライブラリです",
+  "author": "ultemica",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mito-shogi/tsshogi-jsa.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/mito-shogi",
+    "access": "public"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --format=esm --target=browser --sourcemap --production --drop=console --drop=debugger --external=tsshogi --outdir dist",
+    "build:tsc": "tsc --declaration --outDir dist --target esnext --module esnext --removeComments --emitDeclarationOnly false",
+    "build:tsup": "tsup",
+    "build:swc": "swc src -d dist",
+    "postbuild": "tsup src/index.ts --dts-only --format esm --out-dir dist",
+    "postbuild:tsc": "esbuild dist/index.js --minify --format=esm --target=esnext --outdir=dist --allow-overwrite",
+    "prebuild": "rimraf dist",
+    "prebuild:tsc": "rimraf dist",
+    "prebuild:swc": "rimraf dist",
+    "prepare": "husky"
+  },
+  "tsup": {
+    "entry": ["src/index.ts"],
+    "format": ["esm"],
+    "dts": true,
+    "sourcemap": true,
+    "clean": true,
+    "alias": {
+      "@mito-shogi/tsshogi-jsa": "./src/index.ts"
+    },
+    "minify": true
+  },
+  "dependencies": {
+    "dayjs": "^1.11.13",
+    "iconv-lite": "^0.6.3",
+    "tsshogi": "^1.9.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.2",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/cz-commitlint": "^19.8.1",
+    "@types/bun": "^1.2.19",
+    "@types/node": "^24.0.15",
+    "esbuild": "^0.25.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "rimraf": "^6.0.1",
+    "swc": "^1.0.11",
+    "tsc-alias": "^1.8.16",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "zod": "^4.0.5"
+  }
+}

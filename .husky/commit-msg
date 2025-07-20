@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ -z "$GIT_CONFIG_PARAMETERS" ]; then
+  bun commitlint --edit "$1"
+fi

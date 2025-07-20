@@ -1,0 +1,20 @@
+[build]
+entrypoints = ["src/index.ts"]
+outdir = "dist"
+sourcemap = "external"
+minify = true
+drop = ["console", "debugger"]
+
+[test]
+coverage = true
+
+[install]
+dev = true
+peer = true
+production = false
+auto = 'auto'
+frozenLockfile = false
+
+[run]
+shell = 'bun'
+bun = true
