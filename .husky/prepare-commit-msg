@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ -z "$GIT_CONFIG_PARAMETERS" ]; then
+  exec < /dev/tty && bun cz --hook || true
+fi
