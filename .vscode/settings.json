@@ -6,7 +6,7 @@
   "vim.autoSwitchInputMethod.enable": false,
   "gitdoc.enabled": true,
   "gitdoc.commitValidationLevel": "none",
-  "gitdoc.autoCommitDelay": 30000,
+  // "gitdoc.autoCommitDelay": 30000,
   "gitdoc.autoPush": "onCommit",
   "gitdoc.ai.model": "gpt-4o",
   "gitdoc.autoPull": "onPush",
