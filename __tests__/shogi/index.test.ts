@@ -1,15 +1,15 @@
 import { describe, expect, test } from 'bun:test'
+import { doesNotThrow } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'bun'
-import { JSAObjectSchema } from '../../src/models/message.dto'
-import { importJSA } from '../../src/utils/jsa'
-import { doesNotThrow } from 'node:assert'
-import { exportCSA, exportKIF, importCSA, importKIF, Record } from 'tsshogi'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { exportKIF, type Record } from 'tsshogi'
+import { JSAObjectSchema } from '../../src/models/message.dto'
+import { importJSA } from '../../src/utils/jsa'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -45,9 +45,7 @@ describe('[Suceess] Parse', () => {
 })
 
 describe('[Failure] Parse', () => {
-  const game_id_list: number[] = [
-    99999, 999999
-  ]
+  const game_id_list: number[] = [99999, 999999]
   for (const game_id of game_id_list) {
     test(`Parse ${game_id}`, () => {
       const buffer: Buffer = readFile(game_id)
