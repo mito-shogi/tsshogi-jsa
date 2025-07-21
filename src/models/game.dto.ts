@@ -19,7 +19,7 @@ const decodeGameList = (buffer: Buffer) => {
     }
     // 長さを取得する
     const length: number = buffer.readUInt32BE(index + 2)
-    if (buffer.slice(index, index + length + 6).length > 0x28) {
+    if (buffer.slice(index, index + length + 6).length >= length) {
       games.push(buffer.slice(index, index + length + 6))
     }
   }
