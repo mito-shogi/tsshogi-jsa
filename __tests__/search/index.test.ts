@@ -19,7 +19,7 @@ const readFile = (file: string | number): Buffer => {
   return readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'bin', `${file}.bin`))
 }
 
-const _fetchFile = async (params: { p1: number; p2: number; p3: number }): Promise<Buffer> => {
+const fetchFile = async (params: { p1: number; p2: number; p3: number }): Promise<Buffer> => {
   const url: URL = new URL('api/index.php', 'https://ip.jsamobile.jp')
   url.searchParams.set('action', 'search')
   url.searchParams.set('p1', params.p1.toString())
@@ -98,17 +98,15 @@ describe('[Success] Parse', () => {
   //   expect(result.data.games.length).toEqual(result.data.count)
   //   doesNotThrow(() => console.log(decodeGameList(buffer)))
   // })
-  // test('Parse 14000', async () => {
-  //   const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 3 })
-  //   console.log(buffer.length)
-  //   const result = GameListObjectSchema.safeParse(buffer)
-  //   if (!result.success) {
-  //     console.error(result.error)
-  //     throw new Error(`Failed to parse GameList for 14000`)
-  //   }
-  //   expect(result.data.games.length).toEqual(result.data.count)
-  //   doesNotThrow(() => console.log(decodeGameList(buffer)))
-  //   console.log(result.data.games.map((game) => game.black.last_name))
-  //   console.log(result.data.games.map((game) => game.black.first_name))
-  // })
+  test('Fetch', async () => {
+    const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 3 })
+    console.log(buffer.length)
+    const result = GameListObjectSchema.safeParse(buffer)
+    if (!result.success) {
+      console.error(result.error)
+      throw new Error('Failed to parse GameList for 14000')
+    }
+    expect(result.data.games.length).toEqual(result.data.count)
+    doesNotThrow(() => console.log(decodeGameList(buffer)))
+  })
 })
