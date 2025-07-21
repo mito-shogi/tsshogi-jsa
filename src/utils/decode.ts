@@ -143,6 +143,7 @@ export const decodeKC = (buffer: Buffer) => {
   bytes.map((byte) => console.log(byte.length.toString(16).padStart(2, '0'), byte.toString('hex')))
   console.log('---------------')
   const next: number = bytes[5].readUInt8(0)
+  const piece: number = bytes[3].readUInt8(0)
   return {
     type: MessageTypeEnum.enum.KC,
     length: bytes[1].readUInt16BE(0),
@@ -152,7 +153,7 @@ export const decodeKC = (buffer: Buffer) => {
       prev: bytes[4].readUInt8(0),
       next: next > 0x80 ? next - 0x80 : next
     },
-    piece: bytes[3].readUInt8(0),
+    piece: next > 0x80 ? piece + 0x08 : piece,
     comment: toNormalize(iconv.decode(bytes[8], 'shift_jis'))
   }
 }
