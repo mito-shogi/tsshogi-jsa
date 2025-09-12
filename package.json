@@ -1,6 +1,6 @@
 {
   "name": "@mito-shogi/tsshogi-jsa",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "将棋連盟ライブ中継アプリの棋譜データをパースするライブラリです",
   "author": "ultemica",
   "license": "MIT",
@@ -55,25 +55,25 @@
     "minify": true
   },
   "dependencies": {
-    "dayjs": "^1.11.13",
-    "iconv-lite": "^0.6.3",
-    "tsshogi": "^1.10.1"
+    "dayjs": "^1.11.18",
+    "iconv-lite": "^0.7.0",
+    "tsshogi": "^2.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.3",
+    "@biomejs/biome": "2.2.4",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/cz-commitlint": "^19.8.1",
-    "@types/bun": "^1.2.19",
-    "@types/node": "^24.1.0",
-    "esbuild": "^0.25.8",
+    "@types/bun": "^1.2.21",
+    "@types/node": "^24.3.1",
+    "esbuild": "^0.25.9",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
+    "lint-staged": "^16.1.6",
     "rimraf": "^6.0.1",
     "swc": "^1.0.11",
     "tsc-alias": "^1.8.16",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
-    "zod": "^4.0.14"
+    "zod": "^4.1.8"
   }
 }
