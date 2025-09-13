@@ -92,20 +92,26 @@ export const KIObjectSchema = BufferSchema.transform(decodeKI).pipe(KITransform)
 
 export type KIObject = z.infer<typeof KIObjectSchema>
 
-/**
- * 対局情報
- */
-export const SCSchema = KISchema.extend({
-  black: z.object({
-    first_name: z.string(),
-    last_name: z.string().nonempty(),
-    rank: z.string()
-  }),
-  white: z.object({
+export const PlayerSchema = z
+  .object({
     first_name: z.string(),
     last_name: z.string().nonempty(),
     rank: z.string()
   })
+  .transform((v) => ({
+    ...v,
+    name: `${v.last_name} ${v.first_name}`,
+    displayText: `${v.last_name} ${v.first_name} ${v.rank}`
+  }))
+
+export type Player = z.infer<typeof PlayerSchema>
+
+/**
+ * 対局情報
+ */
+export const SCSchema = KISchema.extend({
+  black: PlayerSchema,
+  white: PlayerSchema
 })
 export type SC = z.infer<typeof SCSchema>
 
