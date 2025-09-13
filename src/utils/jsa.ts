@@ -1,6 +1,15 @@
 import { importCSA, type Record } from 'tsshogi'
 import { type GameList, GameListObjectSchema } from '@/models/game.dto'
-import { JSAObjectSchema } from '@/models/message.dto'
+import { type GameInfo, JSAObjectSchema } from '@/models/message.dto'
+
+export const decodeJSA = (buffer: Buffer): GameInfo => {
+  const result = JSAObjectSchema.safeParse(buffer)
+  if (!result.success) {
+    console.error('Failed to decode JSA:', result.error)
+    throw result.error
+  }
+  return result.data
+}
 
 /**
  * JSA形式の棋譜を読み取ります。
