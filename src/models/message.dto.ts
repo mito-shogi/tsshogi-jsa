@@ -130,6 +130,7 @@ export const BISchema = z
   })
   .transform((v) => ({
     ...v,
+    displayText: `${v.last_name} ${v.first_name}`,
     metadata: ((): { key: RecordMetadataKey; value: string }[] => {
       const metadata = [
         {
@@ -212,3 +213,4 @@ export type JSA = z.infer<typeof JSASchema>
 
 export const JSAObjectSchema = BufferSchema.transform(decodeJSA).pipe(JSASchema)
 export type JSAObject = z.infer<typeof JSASchema>
+export type GameInfo = z.infer<typeof JSAObjectSchema>
