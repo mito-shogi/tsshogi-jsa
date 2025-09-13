@@ -5,6 +5,7 @@ import utc from 'dayjs/plugin/utc'
 import { RecordMetadataKey } from 'tsshogi'
 import z from 'zod'
 import { PieceTypeEnum } from '@/constant/piece'
+import { Tournament } from '@/constant/tournament'
 import { decodeBI, decodeJSA, decodeKC, decodeKI, decodeSC } from '@/utils/decode'
 import { BufferSchema } from './buffer.dto'
 
@@ -27,66 +28,76 @@ export const KISchema = z.object({
   title: z.string().nonempty(),
   moves: z.number().int().min(0).max(512)
 })
+
 export type KI = z.infer<typeof KISchema>
 
 export const KITransform = KISchema.extend({
   time: z.number().int(),
   opening: z.string().nullable(),
   location: z.string().nonempty().nullable()
-}).transform((v) => ({
-  ...v,
-  metadata: ((): { key: RecordMetadataKey; value: string }[] => {
-    const metadata = [
-      {
-        key: RecordMetadataKey.TOURNAMENT,
-        value: v.title
-      },
-      {
-        key: RecordMetadataKey.DATE,
-        value: dayjs(v.start_time, 'YYYYMMDDHHmm').format('YYYY/MM/DD')
-      },
-      {
-        key: RecordMetadataKey.START_DATETIME,
-        value: dayjs(v.start_time, 'YYYYMMDDHHmm').format('YYYY/MM/DD HH:mm:ss')
-      },
-      {
-        key: RecordMetadataKey.TIME_LIMIT,
-        value: v.time.toString()
-      },
-      {
-        key: RecordMetadataKey.BLACK_TIME_LIMIT,
-        value: v.time.toString()
-      },
-      {
-        key: RecordMetadataKey.WHITE_TIME_LIMIT,
-        value: v.time.toString()
-      },
-      {
-        key: RecordMetadataKey.LENGTH,
-        value: v.moves.toString()
+})
+  .transform((v) => ({
+    ...v,
+    tournament: Object.values(Tournament).find((t) => v.title.includes(t))
+  }))
+  .transform((v) => ({
+    ...v,
+    metadata: ((): { key: RecordMetadataKey; value: string }[] => {
+      const metadata = [
+        {
+          key: RecordMetadataKey.TITLE,
+          value: v.title
+        },
+        {
+          key: RecordMetadataKey.TOURNAMENT,
+          value: v.tournament
+        },
+        {
+          key: RecordMetadataKey.DATE,
+          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD')
+        },
+        {
+          key: RecordMetadataKey.START_DATETIME,
+          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+        },
+        {
+          key: RecordMetadataKey.TIME_LIMIT,
+          value: v.time.toString()
+        },
+        {
+          key: RecordMetadataKey.BLACK_TIME_LIMIT,
+          value: v.time.toString()
+        },
+        {
+          key: RecordMetadataKey.WHITE_TIME_LIMIT,
+          value: v.time.toString()
+        },
+        {
+          key: RecordMetadataKey.LENGTH,
+          value: v.moves.toString()
+        }
+      ]
+      if (v.end_time) {
+        metadata.push({
+          key: RecordMetadataKey.END_DATETIME,
+          value: dayjs(v.end_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+        })
       }
-    ]
-    if (v.end_time) {
-      metadata.push({
-        key: RecordMetadataKey.END_DATETIME,
-        value: dayjs(v.end_time, 'YYYYMMDDHHmm').format('YYYY/MM/DD HH:mm:ss')
-      })
-    }
-    if (v.location) {
-      metadata.push({
-        key: RecordMetadataKey.PLACE,
-        value: v.location
-      })
-    }
-    if (v.opening) {
-      metadata.push({
-        key: RecordMetadataKey.STRATEGY,
-        value: v.opening
-      })
-    }
-    return metadata
-  })()
-}))
+      if (v.location) {
+        metadata.push({
+          key: RecordMetadataKey.PLACE,
+          value: v.location
+        })
+      }
+      if (v.opening) {
+        metadata.push({
+          key: RecordMetadataKey.STRATEGY,
+          value: v.opening
+        })
+      }
+      return metadata
+    })()
+  }))
 
 export const KIObjectSchema = BufferSchema.transform(decodeKI).pipe(KITransform)
 
