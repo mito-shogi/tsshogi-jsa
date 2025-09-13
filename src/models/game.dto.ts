@@ -2,6 +2,8 @@ import z from 'zod'
 import { BufferSchema } from './buffer.dto'
 import { SCObjectSchema } from './message.dto'
 
+export type Game = z.infer<typeof SCObjectSchema>
+
 export const GameListSchema = z.object({
   games: z.array(SCObjectSchema),
   count: z.number().int()
