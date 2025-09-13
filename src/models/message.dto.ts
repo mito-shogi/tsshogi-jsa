@@ -130,7 +130,7 @@ export const BISchema = z
   })
   .transform((v) => ({
     ...v,
-    displayText: `${v.last_name} ${v.first_name}`,
+    name: `${v.last_name} ${v.first_name}`,
     metadata: ((): { key: RecordMetadataKey; value: string }[] => {
       const metadata = [
         {
