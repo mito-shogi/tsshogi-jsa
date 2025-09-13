@@ -233,6 +233,11 @@ export const decodeSC = (buffer: Buffer) => {
   }
 }
 
+/**
+ * バッファーをデコードして棋譜データを取得します
+ * @param buffer
+ * @returns
+ */
 export const decodeJSA = (buffer: Buffer) => {
   let index = 0
   console.log(`Decoding JSA... Length: ${buffer.length} bytes`)
