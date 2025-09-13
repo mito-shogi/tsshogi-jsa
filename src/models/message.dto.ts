@@ -49,10 +49,6 @@ export const KITransform = KISchema.extend({
           value: v.title
         },
         {
-          key: RecordMetadataKey.TOURNAMENT,
-          value: v.tournament
-        },
-        {
           key: RecordMetadataKey.DATE,
           value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD')
         },
@@ -77,6 +73,12 @@ export const KITransform = KISchema.extend({
           value: v.moves.toString()
         }
       ]
+      if (v.tournament) {
+        metadata.push({
+          key: RecordMetadataKey.TOURNAMENT,
+          value: v.tournament
+        })
+      }
       if (v.end_time) {
         metadata.push({
           key: RecordMetadataKey.END_DATETIME,
