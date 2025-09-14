@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { exportKIF, type Record } from 'tsshogi'
+import type { Record } from 'tsshogi'
 import { JSAObjectSchema } from '../../src/models/message.dto'
 import { importJSA } from '../../src/utils/jsa'
 
@@ -29,6 +29,7 @@ describe('[Success] Tournament', () => {
     throw new Error(`Failed to parse JSA for game_id ${game_id}`)
   }
   expect(result.data.info.tournament).toBe('竜王戦')
+  expect(result.data.info.location).toBe('神奈川 鶴巻温泉 陣屋')
 })
 
 describe('[Suceess] Parse', () => {
@@ -50,7 +51,6 @@ describe('[Suceess] Parse', () => {
       if (record instanceof Error) {
         throw record
       }
-      console.log(exportKIF(record))
     })
   }
 })
