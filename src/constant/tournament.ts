@@ -2,7 +2,7 @@ export enum Tournament {
   ABEMA = 'AbemaTVトーナメント',
   ASAHI = '朝日杯将棋オープン戦',
   MAINAVI = 'マイナビ女子オープン',
-  JT = '日本シリーズJT杯',
+  JT = '日本シリーズJT',
   SIRATAKI = '白瀧あゆみ杯',
   KURASIKI = '倉敷藤花戦',
   KAKOGAWA = '加古川青流戦',
