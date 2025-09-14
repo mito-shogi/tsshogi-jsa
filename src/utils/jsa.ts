@@ -29,7 +29,7 @@ export const importJSA = (buffer: Buffer): Record | Error => {
     return record
   }
   for (const metadata of result.data.metadata) {
-    console.log('Setting metadata:', metadata)
+    // console.log('Setting metadata:', metadata)
     record.metadata.setStandardMetadata(metadata.key, metadata.value)
   }
   return record

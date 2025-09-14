@@ -14,7 +14,7 @@ dayjs.extend(timezone)
 dayjs.extend(customParseFormat)
 dayjs.tz.setDefault('Asia/Tokyo')
 
-export const MessageTypeEnum = z.enum(['KI', 'BI', 'KC', 'CT'])
+export const MessageTypeEnum = z.enum(['KI', 'BI', 'KC', 'CT', 'SC'])
 
 /**
  * 棋譜情報
@@ -123,6 +123,7 @@ export type Player = z.infer<typeof PlayerSchema>
  * 対局情報
  */
 export const SCSchema = KISchema.extend({
+  type: z.literal(MessageTypeEnum.enum.SC),
   black: PlayerSchema,
   white: PlayerSchema
 }).transform((v) => ({
