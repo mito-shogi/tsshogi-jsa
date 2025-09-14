@@ -26,6 +26,7 @@ export const KISchema = z.object({
   start_time: z.string().nonempty(),
   end_time: z.string().nonempty().nullable(),
   title: z.string().nonempty(),
+  tournament: z.string().nonempty().optional(),
   moves: z.number().int().min(0).max(512)
 })
 
