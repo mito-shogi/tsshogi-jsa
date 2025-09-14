@@ -25,7 +25,6 @@ const fetchFile = async (params: { p1: number; p2: number; p3: number }): Promis
   url.searchParams.set('p1', params.p1.toString())
   url.searchParams.set('p2', params.p2.toString())
   url.searchParams.set('p3', params.p3.toString())
-  console.log(url.href, process.env.TOKEN)
   const response = await fetch(url.href, {
     method: 'GET',
     headers: {
@@ -100,13 +99,13 @@ describe('[Success] Parse', () => {
   // })
   test('Fetch', async () => {
     const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 3 })
-    console.log(buffer.length)
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
       console.error(result.error)
       throw new Error('Failed to parse GameList for 14000')
     }
     expect(result.data.games.length).toEqual(result.data.count)
-    doesNotThrow(() => console.log(decodeGameList(buffer)))
+    // console.log(decodeGameList(buffer))
+    doesNotThrow(() => decodeGameList(buffer))
   })
 })
