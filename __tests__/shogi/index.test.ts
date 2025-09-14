@@ -20,6 +20,17 @@ const readFile = (file: string | number): Buffer => {
   return readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'bin', `${file}.bin`))
 }
 
+describe('[Success] Tournament', () => {
+  const game_id: number = 100
+  const buffer: Buffer = readFile(game_id)
+  const result = JSAObjectSchema.safeParse(buffer)
+  if (!result.success) {
+    console.error(result.error)
+    throw new Error(`Failed to parse JSA for game_id ${game_id}`)
+  }
+  expect(result.data.info.tournament).toBe('竜王戦')
+})
+
 describe('[Suceess] Parse', () => {
   const game_id_list: number[] = [
     99, 100, 798, 4312, 4567, 17344, 17346, 17347, 17355, 17356, 17357, 17358, 17359, 17361, 17362, 17364, 17365, 17367,
