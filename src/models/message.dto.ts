@@ -26,7 +26,6 @@ export const KISchema = z.object({
   start_time: z.string().nonempty(),
   end_time: z.string().nonempty().nullable(),
   title: z.string().nonempty(),
-  tournament: z.string().nonempty().optional(),
   moves: z.number().int().min(0).max(512)
 })
 
@@ -126,7 +125,10 @@ export type Player = z.infer<typeof PlayerSchema>
 export const SCSchema = KISchema.extend({
   black: PlayerSchema,
   white: PlayerSchema
-})
+}).transform((v) => ({
+  ...v,
+  tournament: Object.values(Tournament).find((t) => v.title.includes(t))
+}))
 export type SC = z.infer<typeof SCSchema>
 
 export const SCObjectSchema = BufferSchema.transform(decodeSC).pipe(SCSchema)
