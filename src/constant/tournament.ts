@@ -40,6 +40,7 @@ export enum Tournament {
   SETAGAYA = '世田谷花みず木女流オープン',
   ASAHI_AMA_MEIJIN = '朝日アマ名人戦',
   F_AMA_MEIJIN = '女流アマ名人戦',
+  NEXT_MOVE = '次の一手名人戦',
   MAINAVI_CHALLENGE = 'マイナビ・チャレンジマッチ',
   DENOU = '電王戦',
   HENNYU = '棋士編入試験',
@@ -112,5 +113,6 @@ export const TournamentList: { keys: string[]; value: Tournament }[] = [
   { keys: ['天童将棋祭り'], value: Tournament.TENDO },
   { keys: ['横浜将棋まつり'], value: Tournament.YOKOHAMA },
   { keys: ['関西女流棋士フェスタ'], value: Tournament.KANSAI_FEST },
-  { keys: ['天童桜まつり'], value: Tournament.TENDO_SAKURA }
+  { keys: ['天童桜まつり'], value: Tournament.TENDO_SAKURA },
+  { keys: ['次の一手名人戦'], value: Tournament.NEXT_MOVE }
 ]
