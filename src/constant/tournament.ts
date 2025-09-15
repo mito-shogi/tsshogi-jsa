@@ -20,7 +20,7 @@ export enum Tournament {
   SUNTORY = '将棋オールスター',
   HAKURAI = '白玲戦',
   F_RANK = '女流順位戦',
-  SEIREI = '清麗',
+  SEIREI = '清麗戦',
   MAINABI = 'マイナビ女子オープン',
   F_OUZA = '女流王座戦',
   F_MEIJIN = '女流名人戦',
