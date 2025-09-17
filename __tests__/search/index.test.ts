@@ -90,7 +90,7 @@ describe('[Success] Parse', () => {
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
     for (const game of result.data.games) {
-      console.debug(game.game_id)
+      console.debug('Game Id:', game.game_id)
       const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
       doesNotThrow(() => decodeJSA(buffer))
       doesNotThrow(() => importJSA(buffer))
@@ -106,7 +106,7 @@ describe('[Success] Parse', () => {
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
     for (const game of result.data.games) {
-      console.debug(game.game_id)
+      console.debug('Game Id:', game.game_id)
       const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
       doesNotThrow(() => decodeJSA(buffer))
       doesNotThrow(() => importJSA(buffer))
