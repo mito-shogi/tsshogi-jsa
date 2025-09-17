@@ -114,6 +114,7 @@ describe('[Success] Parse', () => {
       doesNotThrow(() => decodeJSA(buffer))
       doesNotThrow(() => importJSA(buffer))
       const result: GameInfo = decodeJSA(buffer)
+      console.log(result.info.tournament, result.info.title)
       expect(result.info.tournament).not.toBe(null)
     }
   })
