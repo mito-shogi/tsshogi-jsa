@@ -8,7 +8,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { GameListObjectSchema } from '../../src/models/game.dto'
-import { decodeGameList, decodeJSA } from '../../src/utils/jsa'
+import { decodeGameList, decodeJSA, importJSA } from '../../src/utils/jsa'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -35,7 +35,9 @@ const fetchFile = async (
       'User-Agent': 'JsaLive/1 CFNetwork/1474.1 Darwin/23.0.0'
     }
   })
-  return Buffer.from(await response.arrayBuffer())
+  const buffer = Buffer.from(await response.arrayBuffer())
+  // writeFileSync(join(dirname(fileURLToPath(import.meta.url)), 'bin', `${params.p1}.bin`), buffer)
+  return buffer
 }
 
 describe('[Success] Parse', () => {
@@ -88,9 +90,10 @@ describe('[Success] Parse', () => {
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
     for (const game of result.data.games) {
-      console.log(game.game_id)
+      console.debug(game.game_id)
       const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
       doesNotThrow(() => decodeJSA(buffer))
+      doesNotThrow(() => importJSA(buffer))
     }
   })
   it('Fetch 200', async () => {
@@ -103,8 +106,10 @@ describe('[Success] Parse', () => {
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
     for (const game of result.data.games) {
+      console.debug(game.game_id)
       const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
       doesNotThrow(() => decodeJSA(buffer))
+      doesNotThrow(() => importJSA(buffer))
     }
   })
   it('Fetch 14000', async () => {

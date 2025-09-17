@@ -32,10 +32,10 @@ describe('[Success] Tournament', () => {
   expect(result.data.info.location).toBe('神奈川 鶴巻温泉 陣屋')
 })
 
-describe('[Suceess] Parse', () => {
+describe('[Success] Parse', () => {
   const game_id_list: number[] = [
     99, 100, 798, 4312, 4567, 17344, 17346, 17347, 17355, 17356, 17357, 17358, 17359, 17361, 17362, 17364, 17365, 17367,
-    17368, 100
+    17368, 19267
   ]
   for (const game_id of game_id_list) {
     test(`Parse ${game_id}`, () => {
