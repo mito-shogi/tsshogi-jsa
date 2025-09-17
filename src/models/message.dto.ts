@@ -182,6 +182,7 @@ export const KCSchema = z
   .transform((v) => ({
     ...v,
     csa: ((): string => {
+      // console.debug('Generate CSA from Move', v)
       if (v.moves === 0) {
         return ['PI', '+'].join('\n')
       }

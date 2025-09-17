@@ -76,7 +76,7 @@ export const decodeKI = (buffer: Buffer) => {
   // 区切ったバッファ
   const bytes = chunk(buffer.slice(index + 2), lengths)
   // バッファの中を表示
-  // bytes.map((byte) => console.log(byte.length.toString(16).padStart(2, '0'), byte.toString('hex')))
+  // bytes.map((byte) => console.debug(byte.length.toString(16).padStart(2, '0'), byte.toString('hex')))
   const moves = bytes[14].readUInt32BE(0)
   const end_time = iconv.decode(bytes[4], 'shift_jis')
   return {
@@ -105,7 +105,7 @@ export const decodeBI = (buffer: Buffer) => {
   // BIの区切り型
   const lengths = [0x02, 0x02, 0x01, 0x01, last_name_length, 0x01, first_name_length, 0x02]
   const bytes = chunk(buffer.slice(index + 2), lengths)
-  // bytes.map((byte) => console.log(byte.length.toString(16).padStart(2, '0'), byte.toString('hex')))
+  // bytes.map((byte) => console.debug(byte.length.toString(16).padStart(2, '0'), byte.toString('hex')))
 
   return {
     type: MessageTypeEnum.enum.BI,
@@ -136,10 +136,11 @@ export const decodeKC = (buffer: Buffer) => {
   // KCの区切り型
   const lengths = [0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x04, 0x04, length]
   const bytes = chunk(buffer.slice(index + 2), lengths)
-  // console.log(buffer.length)
-  // console.log(buffer.toHex())
-  // bytes.map((byte) => console.log(byte.length.toString(16).padStart(2, '0'), byte.toString('hex')))
-  // console.log('---------------')
+  // console.debug('Length:', buffer.length)
+  // console.debug('Hex:', buffer.toHex())
+  // console.debug('Text:', iconv.decode(bytes[8], 'shift_jis'))
+  // bytes.map((byte) => console.debug(byte.length.toString(16).padStart(2, '0'), byte.toString('hex')))
+  // console.debug('---------------')
   const next: number = bytes[5].readUInt8(0)
   const piece: number = bytes[3].readUInt8(0)
   return {
@@ -157,8 +158,8 @@ export const decodeKC = (buffer: Buffer) => {
 }
 
 export const decodeSC = (buffer: Buffer) => {
-  // console.log(`Decoding SC... Length: ${buffer.length} bytes`)
-  // console.log(buffer.toString('hex'))
+  // console.debug(`Decoding SC... Length: ${buffer.length} bytes`)
+  // console.debug(buffer.toString('hex'))
   // 初期値のオフセット
   const index: number = buffer.indexOf(Buffer.from([0x4b, 0x49]))
   const title_length: number = buffer.readUInt8(index + 0x22)
@@ -206,9 +207,9 @@ export const decodeSC = (buffer: Buffer) => {
   const bytes = chunk(buffer.slice(index + 2), lengths)
   // バッファの中を表示
   // bytes.map((byte) =>
-  //   console.log(byte.length.toString(16).padStart(2, '0'), byte.toString('hex'), iconv.decode(byte, 'shift_jis'))
+  //   console.debug(byte.length.toString(16).padStart(2, '0'), byte.toString('hex'), iconv.decode(byte, 'shift_jis'))
   // )
-  // console.log('---------------')
+  // console.debug('---------------')
   const end_time = iconv.decode(bytes[4], 'shift_jis')
   return {
     type: MessageTypeEnum.enum.SC,
@@ -238,17 +239,20 @@ export const decodeSC = (buffer: Buffer) => {
  */
 export const decodeJSA = (buffer: Buffer) => {
   let index = 0
-  // console.log(`Decoding JSA... Length: ${buffer.length} bytes`)
-  const comments: Buffer[] = []
-  // biome-ignore lint/suspicious/noAssignInExpressions: reason
-  while ((index = buffer.indexOf(Buffer.from([0x4b, 0x43]), index + 1)) !== -1) {
-    const length: number = buffer.readUInt32BE(index + 2)
-    comments.push(buffer.slice(index, index + length))
-  }
-  // console.log(`Found ${comments.length} comments`)
+  console.debug(`Decoding JSA... Length: ${buffer.length} bytes`)
   const magic: Buffer = Buffer.from([0x42, 0x49])
   const black_index = buffer.indexOf(magic)
   const white_index = buffer.indexOf(magic, black_index + magic.length)
+  console.debug('Magic Black:', black_index)
+  console.debug('Magic White:', white_index)
+  const comments: Buffer[] = []
+  const comment_buffer: Buffer = buffer.slice(white_index)
+  // biome-ignore lint/suspicious/noAssignInExpressions: reason
+  while ((index = comment_buffer.indexOf(Buffer.from([0x4b, 0x43]), index + 1)) !== -1) {
+    const length: number = comment_buffer.readUInt32BE(index + 2)
+    comments.push(comment_buffer.slice(index, index + length))
+  }
+  // console.debug(`Found ${comments.length} comments`)
   return {
     info: buffer,
     black: buffer.slice(black_index) as Buffer,
