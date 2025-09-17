@@ -17,19 +17,24 @@ export const decodeJSA = (buffer: Buffer): GameInfo => {
  */
 export const importJSA = (buffer: Buffer): Record | Error => {
   const result = JSAObjectSchema.safeParse(buffer)
-  // console.log('JSA parsing result:', result)
+  // console.debug('JSA parsing result:', result)
   if (!result.success) {
     throw result.error
   }
   const record = importCSA(result.data.comments.map((comment) => comment.csa).join('\n'))
   if (record instanceof Error) {
     if (import.meta.env.NODE_ENV === 'test') {
+      console.error('Failed to import CSA:')
+      // console.error(result.data.black.metadata)
+      // console.error(result.data.white.metadata)
+      // console.error(result.data.metadata)
+      // console.error(result.data.comments.map((comment) => comment.csa).join('\n'))
       throw record
     }
     return record
   }
   for (const metadata of result.data.metadata) {
-    // console.log('Setting metadata:', metadata)
+    // console.debug('Setting metadata:', metadata)
     record.metadata.setStandardMetadata(metadata.key, metadata.value)
   }
   return record
