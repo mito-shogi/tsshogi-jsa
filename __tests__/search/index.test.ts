@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, it, test } from 'bun:test'
 import { doesNotThrow } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -97,7 +97,27 @@ describe('[Success] Parse', () => {
   //   expect(result.data.games.length).toEqual(result.data.count)
   //   doesNotThrow(() => console.log(decodeGameList(buffer)))
   // })
-  test('Fetch', async () => {
+  it('should fetch and parse GameList for 100', async () => {
+    const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 1 })
+    const result = GameListObjectSchema.safeParse(buffer)
+    if (!result.success) {
+      console.error(result.error)
+      throw new Error('Failed to parse GameList for 100')
+    }
+    expect(result.data.games.length).toEqual(result.data.count)
+    doesNotThrow(() => decodeGameList(buffer))
+  })
+  it('should fetch and parse GameList for 200', async () => {
+    const buffer: Buffer = await fetchFile({ p1: 0, p2: 200, p3: 2 })
+    const result = GameListObjectSchema.safeParse(buffer)
+    if (!result.success) {
+      console.error(result.error)
+      throw new Error('Failed to parse GameList for 200')
+    }
+    expect(result.data.games.length).toEqual(result.data.count)
+    doesNotThrow(() => decodeGameList(buffer))
+  })
+  it('should fetch and parse GameList for 14000', async () => {
     const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 3 })
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
@@ -105,7 +125,6 @@ describe('[Success] Parse', () => {
       throw new Error('Failed to parse GameList for 14000')
     }
     expect(result.data.games.length).toEqual(result.data.count)
-    // console.log(decodeGameList(buffer))
     doesNotThrow(() => decodeGameList(buffer))
   })
 })
