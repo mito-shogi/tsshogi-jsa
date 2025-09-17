@@ -38,7 +38,8 @@ export const KITransform = KISchema.extend({
 })
   .transform((v) => ({
     ...v,
-    tournament: TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value
+    tournament: ((): string | undefined =>
+      TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value)()
   }))
   .transform((v) => ({
     ...v,
@@ -128,7 +129,8 @@ export const SCSchema = KISchema.extend({
   white: PlayerSchema
 }).transform((v) => ({
   ...v,
-  tournament: TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value
+  tournament: ((): string | undefined =>
+    TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value)()
 }))
 export type SC = z.infer<typeof SCSchema>
 

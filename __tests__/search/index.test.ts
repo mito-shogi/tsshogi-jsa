@@ -8,6 +8,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { GameListObjectSchema } from '../../src/models/game.dto'
+import type { GameInfo } from '../../src/models/message.dto'
 import { decodeGameList, decodeJSA, importJSA } from '../../src/utils/jsa'
 
 dayjs.extend(utc)
@@ -94,6 +95,8 @@ describe('[Success] Parse', () => {
       const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
       doesNotThrow(() => decodeJSA(buffer))
       doesNotThrow(() => importJSA(buffer))
+      const result: GameInfo = decodeJSA(buffer)
+      expect(result.info.tournament).not.toBe(null)
     }
   })
   it('Fetch 200', async () => {
@@ -110,6 +113,8 @@ describe('[Success] Parse', () => {
       const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
       doesNotThrow(() => decodeJSA(buffer))
       doesNotThrow(() => importJSA(buffer))
+      const result: GameInfo = decodeJSA(buffer)
+      expect(result.info.tournament).not.toBe(null)
     }
   })
   it('Fetch 14000', async () => {
