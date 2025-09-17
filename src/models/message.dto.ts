@@ -5,7 +5,7 @@ import utc from 'dayjs/plugin/utc'
 import { RecordMetadataKey } from 'tsshogi'
 import z from 'zod'
 import { PieceTypeEnum } from '@/constant/piece'
-import { Tournament, TournamentList } from '@/constant/tournament'
+import { TournamentList } from '@/constant/tournament'
 import { decodeBI, decodeJSA, decodeKC, decodeKI, decodeSC } from '@/utils/decode'
 import { BufferSchema } from './buffer.dto'
 
@@ -128,7 +128,7 @@ export const SCSchema = KISchema.extend({
   white: PlayerSchema
 }).transform((v) => ({
   ...v,
-  tournament: Object.values(Tournament).find((t) => v.title.includes(t))
+  tournament: TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value
 }))
 export type SC = z.infer<typeof SCSchema>
 
