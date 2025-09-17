@@ -8,7 +8,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { GameListObjectSchema } from '../../src/models/game.dto'
-import { decodeGameList } from '../../src/utils/jsa'
+import { decodeGameList, decodeJSA } from '../../src/utils/jsa'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -19,9 +19,12 @@ const readFile = (file: string | number): Buffer => {
   return readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'bin', `${file}.bin`))
 }
 
-const fetchFile = async (params: { p1: number; p2: number; p3: number }): Promise<Buffer> => {
+const fetchFile = async (
+  action: 'search' | 'shogi',
+  params: { p1: number; p2: number; p3: number }
+): Promise<Buffer> => {
   const url: URL = new URL('api/index.php', 'https://ip.jsamobile.jp')
-  url.searchParams.set('action', 'search')
+  url.searchParams.set('action', action)
   url.searchParams.set('p1', params.p1.toString())
   url.searchParams.set('p2', params.p2.toString())
   url.searchParams.set('p3', params.p3.toString())
@@ -76,7 +79,7 @@ describe('[Success] Parse', () => {
     }
   })
   it('Fetch 100', async () => {
-    const buffer: Buffer = await fetchFile({ p1: 0, p2: 100, p3: 1 })
+    const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 100, p3: 1 })
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
       console.error(result.error)
@@ -84,9 +87,14 @@ describe('[Success] Parse', () => {
     }
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
+    for (const game of result.data.games) {
+      console.log(game.game_id)
+      const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
+      doesNotThrow(() => decodeJSA(buffer))
+    }
   })
   it('Fetch 200', async () => {
-    const buffer: Buffer = await fetchFile({ p1: 0, p2: 200, p3: 2 })
+    const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 200, p3: 2 })
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
       console.error(result.error)
@@ -94,9 +102,13 @@ describe('[Success] Parse', () => {
     }
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
+    for (const game of result.data.games) {
+      const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
+      doesNotThrow(() => decodeJSA(buffer))
+    }
   })
   it('Fetch 14000', async () => {
-    const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 3 })
+    const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 14000, p3: 3 })
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
       console.error(result.error)
