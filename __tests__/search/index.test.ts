@@ -75,30 +75,8 @@ describe('[Success] Parse', () => {
       doesNotThrow(() => decodeGameList(buffer))
     }
   })
-  // test('Parse 14000', () => {
-  //   const buffer: Buffer = readFile('20250720_3')
-  //   const result = GameListObjectSchema.safeParse(buffer)
-  //   if (!result.success) {
-  //     console.error(result.error)
-  //     throw new Error(`Failed to parse GameList for 14000`)
-  //   }
-  //   expect(result.data.games.length).toEqual(890)
-  //   expect(result.data.games.length).toEqual(result.data.count)
-  //   doesNotThrow(() => console.log(decodeGameList(buffer)))
-  // })
-  // test('Parse 200', async () => {
-  //   const buffer: Buffer = await fetchFile({ p1: 0, p2: 200, p3: 2 })
-  //   console.log(buffer.length)
-  //   const result = GameListObjectSchema.safeParse(buffer)
-  //   if (!result.success) {
-  //     console.error(result.error)
-  //     throw new Error(`Failed to parse GameList for 14000`)
-  //   }
-  //   expect(result.data.games.length).toEqual(result.data.count)
-  //   doesNotThrow(() => console.log(decodeGameList(buffer)))
-  // })
-  it('should fetch and parse GameList for 100', async () => {
-    const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 1 })
+  it('Fetch 100', async () => {
+    const buffer: Buffer = await fetchFile({ p1: 0, p2: 100, p3: 1 })
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
       console.error(result.error)
@@ -107,7 +85,7 @@ describe('[Success] Parse', () => {
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
   })
-  it('should fetch and parse GameList for 200', async () => {
+  it('Fetch 200', async () => {
     const buffer: Buffer = await fetchFile({ p1: 0, p2: 200, p3: 2 })
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
@@ -117,7 +95,7 @@ describe('[Success] Parse', () => {
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
   })
-  it('should fetch and parse GameList for 14000', async () => {
+  it('Fetch 14000', async () => {
     const buffer: Buffer = await fetchFile({ p1: 0, p2: 14000, p3: 3 })
     const result = GameListObjectSchema.safeParse(buffer)
     if (!result.success) {
