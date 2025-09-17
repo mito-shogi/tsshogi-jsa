@@ -9,7 +9,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import type { Record } from 'tsshogi'
 import { JSAObjectSchema } from '../../src/models/message.dto'
-import { importJSA } from '../../src/utils/jsa'
+import { decodeJSA, importJSA } from '../../src/utils/jsa'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -51,6 +51,7 @@ describe('[Suceess] Parse', () => {
       if (record instanceof Error) {
         throw record
       }
+      doesNotThrow(() => decodeJSA(buffer))
     })
   }
 })
