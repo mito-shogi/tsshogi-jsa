@@ -143,7 +143,7 @@ export const BISchema = z
     length: z.number().int().min(0),
     is_black: z.boolean(),
     last_name: z.string().nonempty(),
-    first_name: z.string().nonempty()
+    first_name: z.string()
   })
   .transform((v) => ({
     ...v,
