@@ -60,6 +60,6 @@ jobs:
         run: bun install
       - name: Test
         run: |
-          bun test
+          bun test --timeout 10000
         env:
           TOKEN: ${{ secrets.TOKEN }}
