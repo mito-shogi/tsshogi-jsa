@@ -7,9 +7,9 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { GameListObjectSchema } from '../../src/models/game.dto'
-import type { GameInfo } from '../../src/models/message.dto'
-import { decodeGameList, decodeJSA, importJSA } from '../../src/utils/jsa'
+import { GameListObjectSchema } from '../../../src/models/game.dto'
+import type { GameInfo } from '../../../src/models/message.dto'
+import { decodeGameList, decodeJSA, importJSA } from '../../../src/utils/jsa'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)

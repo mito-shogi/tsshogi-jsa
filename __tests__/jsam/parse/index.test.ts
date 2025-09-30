@@ -6,7 +6,7 @@ import { fileURLToPath } from 'bun'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
-import { decodeJSA } from '../../src/utils/jsa'
+import { decodeJSA } from '../../../src/utils/jsa'
 
 dayjs.extend(timezone)
 dayjs.extend(customParseFormat)
