@@ -239,12 +239,9 @@ export const decodeSC = (buffer: Buffer) => {
  */
 export const decodeJSA = (buffer: Buffer) => {
   let index = 0
-  console.debug(`Decoding JSA... Length: ${buffer.length} bytes`)
   const magic: Buffer = Buffer.from([0x42, 0x49])
   const black_index = buffer.indexOf(magic)
   const white_index = buffer.indexOf(magic, black_index + magic.length)
-  console.debug('Magic Black:', black_index)
-  console.debug('Magic White:', white_index)
   const comments: Buffer[] = []
   const comment_buffer: Buffer = buffer.slice(white_index)
   // biome-ignore lint/suspicious/noAssignInExpressions: reason
