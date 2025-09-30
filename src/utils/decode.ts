@@ -4,7 +4,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import iconv from 'iconv-lite'
 import { MessageTypeEnum } from '@/models/message.dto'
-import { toHankaku, toNormalize } from './convert'
+import { replaceAll, toHankaku } from './convert'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -85,9 +85,9 @@ export const decodeKI = (buffer: Buffer) => {
     game_id: bytes[2].readUInt32BE(0),
     start_time: dayjs.tz(iconv.decode(bytes[3], 'shift_jis'), 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
     end_time: end_time === '000000000000' ? null : dayjs.tz(end_time, 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
-    title: toNormalize(iconv.decode(bytes[6], 'shift_jis')).split('/')[0].trim(),
+    title: replaceAll(iconv.decode(bytes[6], 'shift_jis')).split('/')[0].trim(),
     opening: bytes[8].length === 0 ? null : toHankaku(iconv.decode(bytes[8], 'shift_jis')),
-    location: bytes[13].length === 0 ? null : toNormalize(iconv.decode(bytes[13], 'shift_jis')),
+    location: bytes[13].length === 0 ? null : replaceAll(iconv.decode(bytes[13], 'shift_jis')),
     moves: moves === 0x400 ? 0 : moves,
     time: moves === 0x400 ? 0 : bytes[11].readUInt16BE(0)
   }
@@ -153,7 +153,7 @@ export const decodeKC = (buffer: Buffer) => {
       next: next > 0x80 ? next - 0x80 : next
     },
     piece: next > 0x80 ? piece + 0x08 : piece,
-    comment: toNormalize(iconv.decode(bytes[8], 'shift_jis'))
+    comment: replaceAll(iconv.decode(bytes[8], 'shift_jis'))
   }
 }
 
@@ -217,7 +217,7 @@ export const decodeSC = (buffer: Buffer) => {
     game_id: bytes[2].readUInt32BE(0),
     start_time: dayjs.tz(iconv.decode(bytes[3], 'shift_jis'), 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
     end_time: end_time === '000000000000' ? null : dayjs.tz(end_time, 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
-    title: toNormalize(iconv.decode(bytes[6], 'shift_jis')).split('/')[0].trim(),
+    title: replaceAll(iconv.decode(bytes[6], 'shift_jis')).split('/')[0].trim(),
     moves: bytes[9].readUInt8(0),
     black: {
       last_name: iconv.decode(bytes[13], 'shift_jis'),
