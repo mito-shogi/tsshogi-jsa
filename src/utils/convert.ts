@@ -2,7 +2,7 @@ export const toHankaku = (str: string): string => {
   return str.replace(/[\uFF10-\uFF19]/g, (match) => String.fromCharCode(match.charCodeAt(0) - 0xfee0))
 }
 
-export const toNormalize = (str: string): string => {
+export const replaceAll = (str: string): string => {
   return (
     str
       .replace(/[\uFF10-\uFF19]/g, (match) => String.fromCharCode(match.charCodeAt(0) - 0xfee0))
