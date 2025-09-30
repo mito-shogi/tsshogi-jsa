@@ -8,8 +8,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import type { Record } from 'tsshogi'
-import { JSAObjectSchema } from '../../src/models/message.dto'
-import { decodeJSA, importJSA } from '../../src/utils/jsa'
+import { JSAObjectSchema } from '../../../src/models/message.dto'
+import { decodeJSA, importJSA } from '../../../src/utils/jsa'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
