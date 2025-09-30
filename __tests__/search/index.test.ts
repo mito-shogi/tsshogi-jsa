@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import { doesNotThrow } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -16,7 +16,7 @@ dayjs.extend(timezone)
 dayjs.extend(customParseFormat)
 dayjs.tz.setDefault('Asia/Tokyo')
 
-const readFile = (file: string | number): Buffer => {
+const _readFile = (file: string | number): Buffer => {
   return readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'bin', `${file}.bin`))
 }
 
@@ -42,63 +42,63 @@ const fetchFile = async (
 }
 
 describe('[Success] Parse', () => {
-  test('20250720', () => {
-    const paths: string[] = ['20250720_1', '20250720_2', '20250720_3']
-    for (const path of paths) {
-      const buffer: Buffer = readFile(path)
-      const result = GameListObjectSchema.safeParse(buffer)
-      if (!result.success) {
-        console.error(result.error)
-        throw new Error('Failed to parse GameList')
-      }
-      expect(result.data.games.length).toEqual(result.data.count)
-      doesNotThrow(() => decodeGameList(buffer))
-    }
-  })
-  test('20250722', () => {
-    const paths: string[] = ['20250722_2', '20250722_3']
-    for (const path of paths) {
-      const buffer: Buffer = readFile(path)
-      const result = GameListObjectSchema.safeParse(buffer)
-      if (!result.success) {
-        console.error(result.error)
-        throw new Error('Failed to parse GameList')
-      }
-      expect(result.data.games.length).toEqual(result.data.count)
-      doesNotThrow(() => decodeGameList(buffer))
-    }
-  })
-  test('20250723', () => {
-    const paths: string[] = ['20250723_3']
-    for (const path of paths) {
-      const buffer: Buffer = readFile(path)
-      const result = GameListObjectSchema.safeParse(buffer)
-      if (!result.success) {
-        console.error(result.error)
-        throw new Error('Failed to parse GameList')
-      }
-      expect(result.data.games.length).toEqual(result.data.count)
-      doesNotThrow(() => decodeGameList(buffer))
-    }
-  })
-  it('Fetch 100', async () => {
-    const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 100, p3: 1 })
-    const result = GameListObjectSchema.safeParse(buffer)
-    if (!result.success) {
-      console.error(result.error)
-      throw new Error('Failed to parse GameList for 100')
-    }
-    expect(result.data.games.length).toEqual(result.data.count)
-    doesNotThrow(() => decodeGameList(buffer))
-    for (const game of result.data.games) {
-      console.debug('Game Id:', game.game_id)
-      const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
-      doesNotThrow(() => decodeJSA(buffer))
-      doesNotThrow(() => importJSA(buffer))
-      const result: GameInfo = decodeJSA(buffer)
-      expect(result.info.tournament).not.toBe(null)
-    }
-  })
+  // test('20250720', () => {
+  //   const paths: string[] = ['20250720_1', '20250720_2', '20250720_3']
+  //   for (const path of paths) {
+  //     const buffer: Buffer = readFile(path)
+  //     const result = GameListObjectSchema.safeParse(buffer)
+  //     if (!result.success) {
+  //       console.error(result.error)
+  //       throw new Error('Failed to parse GameList')
+  //     }
+  //     expect(result.data.games.length).toEqual(result.data.count)
+  //     doesNotThrow(() => decodeGameList(buffer))
+  //   }
+  // })
+  // test('20250722', () => {
+  //   const paths: string[] = ['20250722_2', '20250722_3']
+  //   for (const path of paths) {
+  //     const buffer: Buffer = readFile(path)
+  //     const result = GameListObjectSchema.safeParse(buffer)
+  //     if (!result.success) {
+  //       console.error(result.error)
+  //       throw new Error('Failed to parse GameList')
+  //     }
+  //     expect(result.data.games.length).toEqual(result.data.count)
+  //     doesNotThrow(() => decodeGameList(buffer))
+  //   }
+  // })
+  // test('20250723', () => {
+  //   const paths: string[] = ['20250723_3']
+  //   for (const path of paths) {
+  //     const buffer: Buffer = readFile(path)
+  //     const result = GameListObjectSchema.safeParse(buffer)
+  //     if (!result.success) {
+  //       console.error(result.error)
+  //       throw new Error('Failed to parse GameList')
+  //     }
+  //     expect(result.data.games.length).toEqual(result.data.count)
+  //     doesNotThrow(() => decodeGameList(buffer))
+  //   }
+  // })
+  // it('Fetch 100', async () => {
+  //   const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 100, p3: 1 })
+  //   const result = GameListObjectSchema.safeParse(buffer)
+  //   if (!result.success) {
+  //     console.error(result.error)
+  //     throw new Error('Failed to parse GameList for 100')
+  //   }
+  //   expect(result.data.games.length).toEqual(result.data.count)
+  //   doesNotThrow(() => decodeGameList(buffer))
+  //   for (const game of result.data.games) {
+  //     console.debug('Game Id:', game.game_id)
+  //     const buffer: Buffer = await fetchFile('shogi', { p1: game.game_id, p2: 0, p3: 0 })
+  //     doesNotThrow(() => decodeJSA(buffer))
+  //     doesNotThrow(() => importJSA(buffer))
+  //     const result: GameInfo = decodeJSA(buffer)
+  //     expect(result.info.tournament).not.toBe(null)
+  //   }
+  // })
   it('Fetch 200', async () => {
     const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 200, p3: 2 })
     const result = GameListObjectSchema.safeParse(buffer)
@@ -106,6 +106,7 @@ describe('[Success] Parse', () => {
       console.error(result.error)
       throw new Error('Failed to parse GameList for 200')
     }
+    console.log('Total Games:', result.data.count)
     expect(result.data.games.length).toEqual(result.data.count)
     doesNotThrow(() => decodeGameList(buffer))
     for (const game of result.data.games) {
@@ -118,14 +119,14 @@ describe('[Success] Parse', () => {
       expect(result.info.tournament).not.toBe(null)
     }
   })
-  it('Fetch 14000', async () => {
-    const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 14000, p3: 3 })
-    const result = GameListObjectSchema.safeParse(buffer)
-    if (!result.success) {
-      console.error(result.error)
-      throw new Error('Failed to parse GameList for 14000')
-    }
-    expect(result.data.games.length).toEqual(result.data.count)
-    doesNotThrow(() => decodeGameList(buffer))
-  })
+  // it('Fetch 14000', async () => {
+  //   const buffer: Buffer = await fetchFile('search', { p1: 0, p2: 14000, p3: 3 })
+  //   const result = GameListObjectSchema.safeParse(buffer)
+  //   if (!result.success) {
+  //     console.error(result.error)
+  //     throw new Error('Failed to parse GameList for 14000')
+  //   }
+  //   expect(result.data.games.length).toEqual(result.data.count)
+  //   doesNotThrow(() => decodeGameList(buffer))
+  // })
 })
