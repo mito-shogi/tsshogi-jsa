@@ -36,6 +36,11 @@ export const importJSA = (buffer: Buffer): Record => {
   return record
 }
 
+/**
+ * バッファーから対局リストにデコードします
+ * @param buffer
+ * @returns
+ */
 export const decodeGameList = (buffer: Buffer): GameList => {
   const result = GameListObjectSchema.safeParse(buffer)
   if (!result.success) {
