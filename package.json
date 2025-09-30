@@ -61,19 +61,19 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
-    "@commitlint/cz-commitlint": "^19.8.1",
-    "@types/bun": "^1.2.22",
-    "@types/node": "^24.5.1",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@commitlint/cz-commitlint": "^20.1.0",
+    "@types/bun": "^1.2.23",
+    "@types/node": "^24.6.0",
     "esbuild": "^0.25.10",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.6",
+    "lint-staged": "^16.2.3",
     "rimraf": "^6.0.1",
     "swc": "^1.0.11",
     "tsc-alias": "^1.8.16",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
-    "zod": "^4.1.9"
+    "zod": "^3.23.8"
   }
 }
