@@ -62,4 +62,8 @@ jobs:
         run: |
           bun test --timeout 10000
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          MEIJIN_USERNAME: ${{ secrets.MEIJIN_USERNAME }}
+          MEIJIN_PASSWORD: ${{ secrets.MEIJIN_PASSWORD }}
+          JSAM_USERNAME: ${{ secrets.JSAM_USERNAME }}
+          JSAM_PASSWORD: ${{ secrets.JSAM_PASSWORD }}
+          MEIJIN_SESSION: ${{ secrets.MEIJIN_SESSION }}
