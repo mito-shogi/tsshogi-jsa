@@ -86,8 +86,8 @@ export const decodeKI = (buffer: Buffer) => {
     start_time: dayjs.tz(iconv.decode(bytes[3], 'shift_jis'), 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
     end_time: end_time === '000000000000' ? null : dayjs.tz(end_time, 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
     title: replaceAll(iconv.decode(bytes[6], 'shift_jis')).split('/')[0].trim(),
-    opening: bytes[8].length === 0 ? null : toHankaku(iconv.decode(bytes[8], 'shift_jis')),
-    location: bytes[13].length === 0 ? null : replaceAll(iconv.decode(bytes[13], 'shift_jis')),
+    strategy: bytes[8].length === 0 ? undefined : toHankaku(iconv.decode(bytes[8], 'shift_jis')),
+    place: bytes[13].length === 0 ? undefined : replaceAll(iconv.decode(bytes[13], 'shift_jis')),
     moves: moves === 0x400 ? 0 : moves,
     time: moves === 0x400 ? 0 : bytes[11].readUInt16BE(0)
   }
@@ -229,31 +229,5 @@ export const decodeSC = (buffer: Buffer) => {
       first_name: iconv.decode(bytes[21], 'shift_jis'),
       rank: iconv.decode(bytes[23], 'shift_jis')
     }
-  }
-}
-
-/**
- * バッファーをデコードして棋譜データを取得します
- * @param buffer
- * @returns
- */
-export const decodeJSA = (buffer: Buffer) => {
-  let index = 0
-  const magic: Buffer = Buffer.from([0x42, 0x49])
-  const black_index = buffer.indexOf(magic)
-  const white_index = buffer.indexOf(magic, black_index + magic.length)
-  const comments: Buffer[] = []
-  const comment_buffer: Buffer = buffer.slice(white_index)
-  // biome-ignore lint/suspicious/noAssignInExpressions: reason
-  while ((index = comment_buffer.indexOf(Buffer.from([0x4b, 0x43]), index + 1)) !== -1) {
-    const length: number = comment_buffer.readUInt32BE(index + 2)
-    comments.push(comment_buffer.slice(index, index + length))
-  }
-  // console.debug(`Found ${comments.length} comments`)
-  return {
-    info: buffer,
-    black: buffer.slice(black_index) as Buffer,
-    white: buffer.slice(white_index) as Buffer,
-    comments: comments
   }
 }

@@ -6,7 +6,7 @@ import { RecordMetadataKey } from 'tsshogi'
 import z from 'zod'
 import { PieceTypeEnum } from '@/constant/piece'
 import { TournamentList } from '@/constant/tournament'
-import { decodeBI, decodeJSA, decodeKC, decodeKI, decodeSC } from '@/utils/decode'
+import { decodeBI, decodeKC, decodeKI, decodeSC } from '@/utils/decode'
 import { BufferSchema } from './buffer.dto'
 
 dayjs.extend(utc)
@@ -33,8 +33,8 @@ export type KI = z.infer<typeof KISchema>
 
 export const KITransform = KISchema.extend({
   time: z.number().int(),
-  opening: z.string().nullable(),
-  location: z.string().nonempty().nullable()
+  strategy: z.string().optional(),
+  place: z.string().nonempty().optional()
 })
   .transform((v) => ({
     ...v,
@@ -86,16 +86,16 @@ export const KITransform = KISchema.extend({
           value: dayjs(v.end_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
         })
       }
-      if (v.location) {
+      if (v.place) {
         metadata.push({
           key: RecordMetadataKey.PLACE,
-          value: v.location
+          value: v.place
         })
       }
-      if (v.opening) {
+      if (v.strategy) {
         metadata.push({
           key: RecordMetadataKey.STRATEGY,
-          value: v.opening
+          value: v.strategy
         })
       }
       return metadata
@@ -115,7 +115,7 @@ export const PlayerSchema = z
   .transform((v) => ({
     ...v,
     name: `${v.last_name} ${v.first_name}`,
-    displayText: `${v.last_name} ${v.first_name} ${v.rank}`
+    display_text: `${v.last_name} ${v.first_name} ${v.rank}`
   }))
 
 export type Player = z.infer<typeof PlayerSchema>
@@ -215,22 +215,3 @@ export const KCObjectSchema = BufferSchema.transform(decodeKC).pipe(KCSchema)
 export const CTSchema = z.object({
   type: z.literal(MessageTypeEnum.enum.CT)
 })
-
-const JSASchema = z
-  .object({
-    info: KIObjectSchema,
-    black: BIObjectSchema,
-    white: BIObjectSchema,
-    comments: z.array(KCObjectSchema).nonempty()
-  })
-  .transform((v) => ({
-    ...v,
-    metadata: ((): { key: RecordMetadataKey; value: string }[] => {
-      return v.info.metadata.concat([v.black.metadata, v.white.metadata].flat())
-    })()
-  }))
-export type JSA = z.infer<typeof JSASchema>
-
-export const JSAObjectSchema = BufferSchema.transform(decodeJSA).pipe(JSASchema)
-export type JSAObject = z.infer<typeof JSASchema>
-export type GameInfo = z.infer<typeof JSAObjectSchema>
