@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { RecordMetadataKey } from 'tsshogi'
+import { type Record, RecordMetadataKey } from 'tsshogi'
 import { decodeBSAList, importBSA } from '../../src/models/game/jsam.dto'
 import { decodeBIFList, importBIF } from '../../src/models/game/meijin.dto'
 import { fetch_jsam_game, fetch_jsam_game_list, fetch_meijin_game, fetch_meijin_game_list } from '../utils/client'
@@ -9,12 +9,32 @@ describe('Parse Game List', () => {
     const buffer = await fetch_jsam_game_list()
     const { games, count } = decodeBSAList(buffer)
     expect(games.length).toBe(count)
+    for (const game of games) {
+      expect(game.meijin_id).toBeUndefined()
+      expect(game.key).toBeUndefined()
+      expect(game.metadata.start_time).toBeDefined()
+      expect(game.metadata.end_time).not.toBeUndefined()
+      expect(game.metadata.title).toBeDefined()
+      expect(game.metadata.tournament).toBeDefined()
+      expect(game.metadata.place).not.toBeNull()
+      expect(game.metadata.strategy).not.toBeNull()
+    }
   })
 
   it('Meijin', async () => {
     const buffer = await fetch_meijin_game_list()
     const { games, count } = decodeBIFList(buffer)
     expect(games.length).toBe(count)
+    for (const game of games) {
+      expect(game.meijin_id).not.toBeUndefined()
+      expect(game.key).not.toBeUndefined()
+      expect(game.metadata.start_time).toBeDefined()
+      expect(game.metadata.end_time).not.toBeUndefined()
+      expect(game.metadata.title).toBeDefined()
+      expect(game.metadata.tournament).toBeDefined()
+      expect(game.metadata.place).not.toBeNull()
+      expect(game.metadata.strategy).not.toBeNull()
+    }
   })
 })
 
@@ -25,7 +45,7 @@ describe('Parse Game', () => {
     expect(games.length).toBe(count)
     for (const game of games) {
       const buffer = await fetch_jsam_game({ game_id: game.game_id })
-      const record = importBSA(buffer)
+      const record: Record = importBSA(buffer)
       expect(record.moves.length).toBeGreaterThan(0)
     }
   })
@@ -37,7 +57,7 @@ describe('Parse Game', () => {
     for (const game of games) {
       // biome-ignore lint/style/noNonNullAssertion: reason
       const buffer = await fetch_meijin_game({ key: game.key! })
-      const record = importBIF(buffer)
+      const record: Record = importBIF(buffer)
       expect(record.moves.length).toBeGreaterThan(0)
     }
   })
