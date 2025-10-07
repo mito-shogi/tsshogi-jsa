@@ -1,10 +1,16 @@
 import iconv from 'iconv-lite'
 
-export const fetch_jsam_game_list = async (): Promise<Buffer> => {
+export const fetch_jsam_game_list = async (params: { p1: number, p2: number, p3: number } = {
+  p1: 0,
+  p2: 200,
+  p3: 2
+
+}): Promise<Buffer> => {
   const url: URL = new URL("/api/index.php", "https://ip.jsamobile.jp")
   url.searchParams.set("action", "search")
-  url.searchParams.set("p3", "2")
-  url.searchParams.set("p2", "200")
+  url.searchParams.set("p3", params.p3.toString())
+  url.searchParams.set("p2", params.p2.toString())
+  url.searchParams.set("p1", params.p1.toString())
   const response = await fetch(url.href, {
     headers: {
       'Authorization': `Basic ${btoa(`${process.env.JSAM_USERNAME}:${process.env.JSAM_PASSWORD}`)}`
