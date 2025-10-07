@@ -11,7 +11,7 @@ export const PlayerInfoSchema = z.object({
 export const MetadataInfo = z.object({
   date: z.string().nonempty(),
   start_time: z.string().nonempty(),
-  end_time: z.string().nonempty(),
+  end_time: z.string().nonempty().optional(),
   title: z.string().nonempty(),
   tournament: z.string().nonempty(),
   length: z.number().min(0),
