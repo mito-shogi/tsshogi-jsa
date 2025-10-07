@@ -70,17 +70,16 @@ export const importBSA = (buffer: Buffer): Record => {
 
 const BufferGameSchema = BufferSchema.transform((v) => {
   let index = 0
+  const BUFFER_OFFSET: number = 6
   const games: Buffer[] = []
   // biome-ignore lint/suspicious/noAssignInExpressions: reason
   while ((index = v.indexOf(Buffer.from([0x4b, 0x49]), index + 1)) !== -1) {
-    // インデックスが範囲外になる場合には終了する
-    if (index + 6 >= v.length) {
-      break
-    }
     // 長さを取得する
     const length: number = v.readUInt32BE(index + 2)
-    if (v.slice(index, index + length + 6).length >= length) {
-      games.push(v.slice(index, index + length + 6))
+    if (v.slice(index, index + length + BUFFER_OFFSET).length >= length) {
+      if (index + length + BUFFER_OFFSET <= v.length) {
+        games.push(v.slice(index, index + length + BUFFER_OFFSET))
+      }
     }
   }
   return {
