@@ -1,9 +1,9 @@
 import z from 'zod'
 
 export const PlayerInfoSchema = z.object({
-  first_name: z.string().nonempty(),
-  last_name: z.string(),
-  rank: z.string().optional(),
+  first_name: z.string(),
+  last_name: z.string().nonempty(),
+  rank: z.string().nonempty().optional(),
   name: z.string().nonempty(),
   display_text: z.string().nonempty()
 })

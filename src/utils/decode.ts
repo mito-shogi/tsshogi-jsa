@@ -158,76 +158,82 @@ export const decodeKC = (buffer: Buffer) => {
 }
 
 export const decodeSC = (buffer: Buffer) => {
-  // console.debug(`Decoding SC... Length: ${buffer.length} bytes`)
-  // console.debug(buffer.toString('hex'))
-  // 初期値のオフセット
-  const index: number = buffer.indexOf(Buffer.from([0x4b, 0x49]))
-  const title_length: number = buffer.readUInt8(index + 0x22)
-  const opening_length: number = buffer.readUInt8(index + 0x23 + title_length)
-  const black_index: number = index + 0x28 + title_length + opening_length
-  const black_last_name_length: number = buffer.readUInt8(black_index)
-  const black_first_name_length: number = buffer.readUInt8(black_index + 0x01 + black_last_name_length)
-  const black_rank_length: number = buffer.readUInt8(
-    black_index + 0x02 + black_first_name_length + black_last_name_length
-  )
-  const white_index: number = black_index + 0x03 + black_first_name_length + black_last_name_length + black_rank_length
-  const white_last_name_length: number = buffer.readUInt8(white_index)
-  const white_first_name_length: number = buffer.readUInt8(white_index + 0x01 + white_last_name_length)
-  const white_rank_length: number = buffer.readUInt8(
-    white_index + 0x02 + white_first_name_length + white_last_name_length
-  )
-  // SCの区切り型
-  const lengths = [
-    0x02, // 区切り
-    0x02, // 長さ
-    0x04, // 対局ID
-    0x0c, // 開始日時
-    0x0c, // 終了日時
-    0x01, // タイトルの長さ
-    title_length, // タイトル
-    0x01, // 戦型の長さ
-    opening_length, // 戦型
-    0x01, // 不明
-    0x01, // 不明
-    0x02, // 持ち時間
-    0x01, // 先手名字の長さ
-    black_last_name_length,
-    0x01, // 先手名前の長さ
-    black_first_name_length, // 先手名字
-    0x01, // 先手段位の長さ
-    black_rank_length, // 先手段位
-    0x01, // 後手名字の長さ
-    white_last_name_length,
-    0x01, // 後手名前の長さ
-    white_first_name_length, // 後手名字
-    0x01, // 後手段位の長さ
-    white_rank_length // 後手段位
-  ]
-  // 区切ったバッファ
-  const bytes = chunk(buffer.slice(index + 2), lengths)
-  // バッファの中を表示
-  // bytes.map((byte) =>
-  //   console.debug(byte.length.toString(16).padStart(2, '0'), byte.toString('hex'), iconv.decode(byte, 'shift_jis'))
-  // )
-  // console.debug('---------------')
-  const end_time = iconv.decode(bytes[4], 'shift_jis')
-  return {
-    type: MessageTypeEnum.enum.SC,
-    length: bytes[1].readUInt16BE(0),
-    game_id: bytes[2].readUInt32BE(0),
-    start_time: dayjs.tz(iconv.decode(bytes[3], 'shift_jis'), 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
-    end_time: end_time === '000000000000' ? null : dayjs.tz(end_time, 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
-    title: replaceAll(iconv.decode(bytes[6], 'shift_jis')).split('/')[0].trim(),
-    moves: bytes[9].readUInt8(0),
-    black: {
-      last_name: iconv.decode(bytes[13], 'shift_jis'),
-      first_name: iconv.decode(bytes[15], 'shift_jis'),
-      rank: iconv.decode(bytes[17], 'shift_jis')
-    },
-    white: {
-      last_name: iconv.decode(bytes[19], 'shift_jis'),
-      first_name: iconv.decode(bytes[21], 'shift_jis'),
-      rank: iconv.decode(bytes[23], 'shift_jis')
+  try {
+    // 初期値のオフセット
+    const index: number = buffer.indexOf(Buffer.from([0x4b, 0x49]))
+    const title_length: number = buffer.readUInt8(index + 0x22)
+    const opening_length: number = buffer.readUInt8(index + 0x23 + title_length)
+    const black_index: number = index + 0x28 + title_length + opening_length
+    const black_last_name_length: number = buffer.readUInt8(black_index)
+    const black_first_name_length: number = buffer.readUInt8(black_index + 0x01 + black_last_name_length)
+    const black_rank_length: number = buffer.readUInt8(
+      black_index + 0x02 + black_first_name_length + black_last_name_length
+    )
+    const white_index: number =
+      black_index + 0x03 + black_first_name_length + black_last_name_length + black_rank_length
+    const white_last_name_length: number = buffer.readUInt8(white_index)
+    const white_first_name_length: number = buffer.readUInt8(white_index + 0x01 + white_last_name_length)
+    const white_rank_length: number = buffer.readUInt8(
+      white_index + 0x02 + white_first_name_length + white_last_name_length
+    )
+    // SCの区切り型
+    const lengths = [
+      0x02, // 区切り
+      0x02, // 長さ
+      0x04, // 対局ID
+      0x0c, // 開始日時
+      0x0c, // 終了日時
+      0x01, // タイトルの長さ
+      title_length, // タイトル
+      0x01, // 戦型の長さ
+      opening_length, // 戦型
+      0x01, // 不明
+      0x01, // 不明
+      0x02, // 持ち時間
+      0x01, // 先手名字の長さ
+      black_last_name_length,
+      0x01, // 先手名前の長さ
+      black_first_name_length, // 先手名字
+      0x01, // 先手段位の長さ
+      black_rank_length, // 先手段位
+      0x01, // 後手名字の長さ
+      white_last_name_length,
+      0x01, // 後手名前の長さ
+      white_first_name_length, // 後手名字
+      0x01, // 後手段位の長さ
+      white_rank_length // 後手段位
+    ]
+    // 区切ったバッファ
+    const bytes = chunk(buffer.slice(index + 2), lengths)
+    // バッファの中を表示
+    // bytes.map((byte) =>
+    //   console.debug(byte.length.toString(16).padStart(2, '0'), byte.toString('hex'), iconv.decode(byte, 'shift_jis'))
+    // )
+    // console.debug('---------------')
+    const end_time = iconv.decode(bytes[4], 'shift_jis')
+    return {
+      type: MessageTypeEnum.enum.SC,
+      length: bytes[1].readUInt16BE(0),
+      game_id: bytes[2].readUInt32BE(0),
+      start_time: dayjs.tz(iconv.decode(bytes[3], 'shift_jis'), 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
+      end_time: end_time === '000000000000' ? null : dayjs.tz(end_time, 'YYYYMMDDHHmm', 'Asia/Tokyo').toISOString(),
+      title: replaceAll(iconv.decode(bytes[6], 'shift_jis')).split('/')[0].trim(),
+      moves: bytes[9].readUInt8(0),
+      black: {
+        last_name: iconv.decode(bytes[13], 'shift_jis'),
+        first_name: iconv.decode(bytes[15], 'shift_jis'),
+        rank: iconv.decode(bytes[17], 'shift_jis')
+      },
+      white: {
+        last_name: iconv.decode(bytes[19], 'shift_jis'),
+        first_name: iconv.decode(bytes[21], 'shift_jis'),
+        rank: iconv.decode(bytes[23], 'shift_jis')
+      }
     }
+  } catch (error) {
+    console.error('Failed to decode SC:', error)
+    console.debug(`Decoding SC... Length: ${buffer.length} bytes`)
+    // console.debug(buffer.toString('hex'), iconv.decode(buffer, 'shift_jis'))
+    throw error
   }
 }

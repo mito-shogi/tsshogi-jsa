@@ -5,10 +5,45 @@ import { decodeBIFList, importBIF } from '../../src/models/game/meijin.dto'
 import { fetch_jsam_game, fetch_jsam_game_list, fetch_meijin_game, fetch_meijin_game_list } from '../utils/client'
 
 describe('Parse Game List', () => {
-  it('JSAM', async () => {
-    const buffer = await fetch_jsam_game_list()
+  it('JSAM 100', async () => {
+    const buffer = await fetch_jsam_game_list({ p1: 0, p2: 100, p3: 1 })
     const { games, count } = decodeBSAList(buffer)
     expect(games.length).toBe(count)
+    expect(games.length).toBeGreaterThan(1)
+    for (const game of games) {
+      expect(game.meijin_id).toBeUndefined()
+      expect(game.key).toBeUndefined()
+      expect(game.metadata.start_time).toBeDefined()
+      expect(game.metadata.end_time).not.toBeUndefined()
+      expect(game.metadata.title).toBeDefined()
+      expect(game.metadata.tournament).toBeDefined()
+      expect(game.metadata.place).not.toBeNull()
+      expect(game.metadata.strategy).not.toBeNull()
+    }
+  })
+
+  it('JSAM 200', async () => {
+    const buffer = await fetch_jsam_game_list({ p1: 0, p2: 200, p3: 2 })
+    const { games, count } = decodeBSAList(buffer)
+    expect(games.length).toBe(count)
+    expect(games.length).toBeGreaterThan(1)
+    for (const game of games) {
+      expect(game.meijin_id).toBeUndefined()
+      expect(game.key).toBeUndefined()
+      expect(game.metadata.start_time).toBeDefined()
+      expect(game.metadata.end_time).not.toBeUndefined()
+      expect(game.metadata.title).toBeDefined()
+      expect(game.metadata.tournament).toBeDefined()
+      expect(game.metadata.place).not.toBeNull()
+      expect(game.metadata.strategy).not.toBeNull()
+    }
+  })
+
+  it('JSAM 14000', async () => {
+    const buffer = await fetch_jsam_game_list({ p1: 0, p2: 14000, p3: 3 })
+    const { games, count } = decodeBSAList(buffer)
+    expect(games.length).toBe(count)
+    expect(games.length).toBeGreaterThan(1)
     for (const game of games) {
       expect(game.meijin_id).toBeUndefined()
       expect(game.key).toBeUndefined()
