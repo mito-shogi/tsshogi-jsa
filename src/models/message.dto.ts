@@ -33,8 +33,8 @@ export type KI = z.infer<typeof KISchema>
 
 export const KITransform = KISchema.extend({
   time: z.number().int(),
-  strategy: z.string().optional(),
-  place: z.string().nonempty().optional()
+  strategy: z.string().or(z.undefined()),
+  place: z.string().nonempty().or(z.undefined())
 })
   .transform((v) => ({
     ...v,
