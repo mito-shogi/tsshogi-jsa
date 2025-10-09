@@ -1,10 +1,21 @@
-import { describe, expect, it } from 'bun:test'
+import { beforeAll, describe, expect, it } from 'bun:test'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { type Record, RecordMetadataKey } from 'tsshogi'
 import { decodeBSAList, importBSA } from '../../src/models/game/jsam.dto'
 import { decodeBIFList, importBIF } from '../../src/models/game/meijin.dto'
 import { fetch_jsam_game, fetch_jsam_game_list, fetch_meijin_game, fetch_meijin_game_list } from '../utils/client'
 
 describe('Parse Game List', () => {
+  beforeAll(() => {
+    dayjs.extend(utc)
+    dayjs.extend(timezone)
+    dayjs.extend(customParseFormat)
+    dayjs.tz.setDefault('Asia/Tokyo')
+  })
+
   it('JSAM 100', async () => {
     const buffer = await fetch_jsam_game_list({ p1: 0, p2: 100, p3: 1 })
     const { games, count } = decodeBSAList(buffer)
@@ -73,6 +84,7 @@ describe('Parse Game List', () => {
       expect(game.white.rank).toBeDefined()
       expect(game.black.rank === undefined).toBe(false)
       expect(game.white.rank === undefined).toBe(false)
+      expect(dayjs.tz(game.metadata.start_time))
     }
   })
 })
