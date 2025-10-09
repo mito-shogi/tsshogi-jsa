@@ -85,7 +85,10 @@ describe('Parse Game List', () => {
       expect(game.black.rank === undefined).toBe(false)
       expect(game.white.rank === undefined).toBe(false)
       if (game.metadata.end_time !== null) {
-        console.log(game.metadata.start_time, game.metadata.end_time)
+        console.log(
+          dayjs(game.metadata.start_time).tz().format('YYYY-MM-DD HH:mm:ss'),
+          dayjs(game.metadata.end_time).tz().format('YYYY-MM-DD HH:mm:ss')
+        )
         // expect(dayjs.tz(game.metadata.start_time).isBefore(dayjs.tz(game.metadata.end_time))).toBe(true)
       }
     }
