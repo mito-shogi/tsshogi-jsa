@@ -89,7 +89,6 @@ describe('Parse Game List', () => {
           dayjs(game.metadata.start_time).tz().format('YYYY-MM-DD HH:mm:ss'),
           dayjs(game.metadata.end_time).tz().format('YYYY-MM-DD HH:mm:ss')
         )
-        // expect(dayjs.tz(game.metadata.start_time).isBefore(dayjs.tz(game.metadata.end_time))).toBe(true)
       }
     }
   })
