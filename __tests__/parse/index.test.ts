@@ -117,6 +117,9 @@ describe('Parse Game', () => {
       const record: Record = importBIF(buffer)
       expect(game.black.rank).toBeDefined()
       expect(game.white.rank).toBeDefined()
+      console.log(game.game_id, record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME))
+      expect(record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME)).toBeDefined()
+      expect(record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME)).toBeDefined()
       expect(record.moves.length).toBeGreaterThan(0)
     }
   })
