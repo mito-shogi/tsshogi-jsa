@@ -50,8 +50,7 @@
     "sourcemap": true,
     "clean": true,
     "alias": {
-      "@mito-shogi/tsshogi-jsa": "./src/index.ts",
-      "@": "./src"
+      "@mito-shogi/tsshogi-jsa": "./src/index.ts"
     },
     "minify": true,
     "bundle": true,
