@@ -35,10 +35,10 @@ export const importBSA = (buffer: Buffer): Record => {
   }
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, black.name)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, white.name)
-  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, dayjs.tz(metadata.start_time).format('YYYY/MM/DD'))
-  record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, dayjs.tz(metadata.start_time).toISOString())
+  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, dayjs(metadata.start_time).tz().format('YYYY/MM/DD'))
+  record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, dayjs(metadata.start_time).tz().toISOString())
   if (metadata.end_time) {
-    record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs.tz(metadata.end_time).toISOString())
+    record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs(metadata.end_time).tz().toISOString())
   }
   if (metadata.place) {
     record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, metadata.place)
