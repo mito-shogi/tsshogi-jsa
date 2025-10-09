@@ -64,6 +64,7 @@ describe('Parse Game List', () => {
       expect(game.metadata.tournament).toBeDefined()
       expect(game.metadata.place).not.toBeNull()
       expect(game.metadata.strategy).not.toBeNull()
+      console.log(game.metadata.start_time)
     }
   })
 
@@ -84,12 +85,12 @@ describe('Parse Game List', () => {
       expect(game.white.rank).toBeDefined()
       expect(game.black.rank === undefined).toBe(false)
       expect(game.white.rank === undefined).toBe(false)
-      if (game.metadata.end_time !== null) {
-        console.log(
-          dayjs(game.metadata.start_time).tz().toISOString(),
-          dayjs(game.metadata.end_time).tz().toISOString()
-        )
-      }
+      // if (game.metadata.end_time !== null) {
+      //   console.log(
+      //     dayjs(game.metadata.start_time).tz().toISOString(),
+      //     dayjs(game.metadata.end_time).tz().toISOString()
+      //   )
+      // }
     }
   })
 })
