@@ -13,7 +13,7 @@
     "declaration": true, // 型定義ファイルを生成する
     "declarationMap": true, // 型定義ファイルのマップを生成する
     "sourceMap": true, // ソースマップを生成する
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"]
     }
