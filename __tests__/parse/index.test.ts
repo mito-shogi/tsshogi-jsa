@@ -93,6 +93,7 @@ describe('Parse Game', () => {
       // biome-ignore lint/style/noNonNullAssertion: reason
       const buffer = await fetch_meijin_game({ key: game.key! })
       const record: Record = importBIF(buffer)
+      console.log(game)
       expect(record.moves.length).toBeGreaterThan(0)
     }
   })
