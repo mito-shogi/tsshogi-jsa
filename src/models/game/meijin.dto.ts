@@ -35,18 +35,18 @@ export const importBIF = (buffer: Buffer): Record => {
   if (start_time) {
     record.metadata.setStandardMetadata(
       RecordMetadataKey.START_DATETIME,
-      dayjs.tz(start_time).subtract(9, 'hours').toISOString()
+      dayjs(start_time).subtract(9, 'hours').tz().toISOString()
     )
     record.metadata.setStandardMetadata(
       RecordMetadataKey.DATE,
-      dayjs.tz(start_time).subtract(9, 'hours').format('YYYY/MM/DD')
+      dayjs(start_time).subtract(9, 'hours').tz().format('YYYY/MM/DD')
     )
   }
   const end_time: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME)
   if (end_time) {
     record.metadata.setStandardMetadata(
       RecordMetadataKey.END_DATETIME,
-      dayjs.tz(end_time).subtract(9, 'hours').toISOString()
+      dayjs(end_time).subtract(9, 'hours').tz().toISOString()
     )
   }
   const time_limit: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)
