@@ -86,8 +86,8 @@ describe('Parse Game List', () => {
       expect(game.white.rank === undefined).toBe(false)
       if (game.metadata.end_time !== null) {
         console.log(
-          dayjs(game.metadata.start_time).tz().format('YYYY-MM-DD HH:mm:ss'),
-          dayjs(game.metadata.end_time).tz().format('YYYY-MM-DD HH:mm:ss')
+          dayjs(game.metadata.start_time).tz().toISOString(),
+          dayjs(game.metadata.end_time).tz().toISOString()
         )
       }
     }
