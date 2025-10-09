@@ -121,7 +121,11 @@ const BufferGameSchema = BufferSchema.transform((v) => replaceAll(iconv.decode(v
           meijin_id: z.coerce.number().int(),
           kif_key: z.string().nonempty(),
           start_date: z.string().nonempty(),
-          end_date: z.string().nonempty().optional(),
+          end_date: z.preprocess(
+            // biome-ignore lint/suspicious/noExplicitAny: reason
+            (input: any) => (input.length === 0 ? undefined : input),
+            z.string().nonempty().optional()
+          ),
           kisen: z.string().nonempty(),
           sente: z.string().nonempty(),
           gote: z.string().nonempty(),
@@ -166,7 +170,7 @@ const BufferGameSchema = BufferSchema.transform((v) => replaceAll(iconv.decode(v
           metadata: {
             date: dayjs.tz(v.start_date).format('YYYY/MM/DD'),
             start_time: toNormalizeDate(v.start_date),
-            end_time: v.end_date === undefined ? undefined : toNormalizeDate(v.end_date),
+            end_time: v.end_date === undefined ? null : toNormalizeDate(v.end_date),
             title: v.kisen,
             tournament: TournamentList.find((t) => t.keys.some((key) => v.kisen.includes(key)))?.value,
             length: v.tesuu,

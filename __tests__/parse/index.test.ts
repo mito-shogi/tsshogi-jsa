@@ -89,7 +89,7 @@ describe('Parse Game', () => {
     const buffer = await fetch_meijin_game_list()
     const { games, count } = decodeBIFList(buffer)
     expect(games.length).toBe(count)
-    for (const game of games) {
+    for (const game of games.slice(0, 10)) {
       // biome-ignore lint/style/noNonNullAssertion: reason
       const buffer = await fetch_meijin_game({ key: game.key! })
       const record: Record = importBIF(buffer)

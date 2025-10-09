@@ -38,7 +38,7 @@ export const fetch_jsam_game = async ({ game_id }: { game_id: number }): Promise
 }
 
 export const fetch_meijin_game_list = async (): Promise<Buffer> => {
-  const url: URL = new URL("/list/meijin_recent_game_list.txt", "https://d31j6ipzjd5eeo.cloudfront.net")
+  const url: URL = new URL("/list/meijin_all_game_list.txt", "https://d31j6ipzjd5eeo.cloudfront.net")
   const response = await fetch(url.href, {
     headers: {
       'Authorization': `Basic ${btoa(`${process.env.MEIJIN_USERNAME}:${process.env.MEIJIN_PASSWORD}`)}`
