@@ -21,7 +21,7 @@ describe('Parse Game List', () => {
     const { games, count } = decodeBSAList(buffer)
     expect(games.length).toBe(count)
     expect(games.length).toBeGreaterThan(1)
-    for (const game of games) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
       expect(game.meijin_id).toBeUndefined()
       expect(game.key).toBeUndefined()
       expect(game.metadata.start_time).toBeDefined()
@@ -38,7 +38,7 @@ describe('Parse Game List', () => {
     const { games, count } = decodeBSAList(buffer)
     expect(games.length).toBe(count)
     expect(games.length).toBeGreaterThan(1)
-    for (const game of games) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
       expect(game.meijin_id).toBeUndefined()
       expect(game.key).toBeUndefined()
       expect(game.metadata.start_time).toBeDefined()
@@ -55,7 +55,7 @@ describe('Parse Game List', () => {
     const { games, count } = decodeBSAList(buffer)
     expect(games.length).toBe(count)
     expect(games.length).toBeGreaterThan(1)
-    for (const game of games) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
       expect(game.meijin_id).toBeUndefined()
       expect(game.key).toBeUndefined()
       expect(game.metadata.start_time).toBeDefined()
@@ -64,7 +64,7 @@ describe('Parse Game List', () => {
       expect(game.metadata.tournament).toBeDefined()
       expect(game.metadata.place).not.toBeNull()
       expect(game.metadata.strategy).not.toBeNull()
-      console.log(game.metadata.start_time)
+      console.log(game.game_id, game.metadata.start_time)
     }
   })
 
