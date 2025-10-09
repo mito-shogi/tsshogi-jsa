@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2024", // 出力するJavaScriptのバージョン
-    "module": "esnext", // ESモジュール形式
-    "moduleResolution": "nodenext", // モジュール解決の戦略
+    "module": "Node16", // ESモジュール形式
+    "moduleResolution": "Node16", // モジュール解決の戦略
     "emitDeclarationOnly": true,
     "declarationDir": "./dist", // 型定義ファイルの出力先ディレクトリ
     "outDir": "./dist", // 出力先ディレクトリ
@@ -13,6 +13,7 @@
     "declaration": true, // 型定義ファイルを生成する
     "declarationMap": true, // 型定義ファイルのマップを生成する
     "sourceMap": true, // ソースマップを生成する
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
