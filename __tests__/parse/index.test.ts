@@ -69,6 +69,7 @@ describe('Parse Game List', () => {
       expect(game.metadata.tournament).toBeDefined()
       expect(game.metadata.place).not.toBeNull()
       expect(game.metadata.strategy).not.toBeNull()
+      expect(game.black.rank).toBeDefined()
     }
   })
 })
