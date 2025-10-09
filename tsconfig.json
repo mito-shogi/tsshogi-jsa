@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2024", // 出力するJavaScriptのバージョン
-    "module": "nodenext", // ESモジュール形式
+    "module": "esnext", // ESモジュール形式
     "moduleResolution": "nodenext", // モジュール解決の戦略
     "emitDeclarationOnly": true,
     "declarationDir": "./dist", // 型定義ファイルの出力先ディレクトリ
