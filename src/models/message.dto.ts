@@ -51,11 +51,11 @@ export const KITransform = KISchema.extend({
         },
         {
           key: RecordMetadataKey.DATE,
-          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD')
+          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz().format('YYYY/MM/DD')
         },
         {
           key: RecordMetadataKey.START_DATETIME,
-          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz().toISOString()
         },
         {
           key: RecordMetadataKey.TIME_LIMIT,
@@ -83,7 +83,7 @@ export const KITransform = KISchema.extend({
       if (v.end_time) {
         metadata.push({
           key: RecordMetadataKey.END_DATETIME,
-          value: dayjs(v.end_time, 'YYYYMMDDHHmm').tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+          value: dayjs(v.end_time, 'YYYYMMDDHHmm').tz().toISOString()
         })
       }
       if (v.place) {
