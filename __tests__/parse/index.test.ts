@@ -84,7 +84,10 @@ describe('Parse Game List', () => {
       expect(game.white.rank).toBeDefined()
       expect(game.black.rank === undefined).toBe(false)
       expect(game.white.rank === undefined).toBe(false)
-      expect(dayjs.tz(game.metadata.start_time))
+      if (game.metadata.end_time !== null) {
+        console.log(game.metadata.start_time, game.metadata.end_time)
+        // expect(dayjs.tz(game.metadata.start_time).isBefore(dayjs.tz(game.metadata.end_time))).toBe(true)
+      }
     }
   })
 })
