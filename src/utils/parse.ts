@@ -1,3 +1,5 @@
+import { replaceAll } from './convert'
+
 /**
  * バッファーを区切り文字で分割する
  * @param buffer
@@ -43,7 +45,7 @@ export const parseName = (name: string): { name: string; rank?: string | undefin
     throw new Error(`Invalid name format: ${name}`)
   }
   return {
-    name: match.groups?.player.trim() ?? name,
+    name: replaceAll(match.groups?.player.trim() ?? name),
     rank: match.groups?.rank.trim()
   }
 }
