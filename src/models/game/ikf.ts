@@ -117,11 +117,11 @@ export const decodeIKFList = (buffer: Buffer): GameInfoList => {
         game_id: 0,
         key: `L${kekka.KI}0${kekka.KAI}0${kekka.KYOKU}`,
         black: {
-          name: black.name,
+          name: replaceAll(black.name),
           rank: black.rank
         },
         white: {
-          name: white.name,
+          name: replaceAll(white.name),
           rank: white.rank
         },
         metadata: {
