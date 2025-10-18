@@ -88,6 +88,7 @@ describe('Parse Game List', () => {
     })
     const { games, count } = decodeIKFList(buffer)
     expect(games.length).toBe(count)
+    console.log(games)
     // for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
     //   expect(game.game_id).toBeDefined()
     // }
