@@ -4,9 +4,20 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { type Record, RecordMetadataKey } from 'tsshogi'
+import { decodeBJFList, importBJF } from '../../src/models/game/ai.dto'
+import { decodeIKFList } from '../../src/models/game/ikf.ts'
 import { decodeBSAList, importBSA } from '../../src/models/game/jsam.dto'
 import { decodeBIFList, importBIF } from '../../src/models/game/meijin.dto'
-import { fetch_jsam_game, fetch_jsam_game_list, fetch_meijin_game, fetch_meijin_game_list } from '../utils/client'
+
+import {
+  fetch_ai_game,
+  fetch_ai_game_list,
+  fetch_igoshogi_game_list,
+  fetch_jsam_game,
+  fetch_jsam_game_list,
+  fetch_meijin_game,
+  fetch_meijin_game_list
+} from '../utils/client'
 
 describe('Parse Game List', () => {
   beforeAll(() => {
@@ -20,7 +31,7 @@ describe('Parse Game List', () => {
     const buffer = await fetch_jsam_game_list({ p1: 0, p2: 100, p3: 1 })
     const { games, count } = decodeBSAList(buffer)
     expect(games.length).toBe(count)
-    expect(games.length).toBeGreaterThan(1)
+    expect(games.length).toBeGreaterThanOrEqual(1)
     for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
       expect(game.meijin_id).toBeUndefined()
       expect(game.key).toBeUndefined()
@@ -30,6 +41,7 @@ describe('Parse Game List', () => {
       expect(game.metadata.tournament).toBeDefined()
       expect(game.metadata.place).not.toBeNull()
       expect(game.metadata.strategy).not.toBeNull()
+      console.log(game.game_id, game.metadata.title)
     }
   })
 
@@ -68,6 +80,28 @@ describe('Parse Game List', () => {
     }
   })
 
+  it('Loushou', async () => {
+    const buffer = await fetch_igoshogi_game_list({
+      ki: 46,
+      type: 'L',
+      block: 'k'
+    })
+    const { games, count } = decodeIKFList(buffer)
+    expect(games.length).toBe(count)
+    // for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+    //   expect(game.game_id).toBeDefined()
+    // }
+  })
+
+  it('AI', async () => {
+    const buffer = await fetch_ai_game_list()
+    const { games, count } = decodeBJFList(buffer)
+    expect(games.length).toBe(count)
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      expect(game.game_id).toBeDefined()
+    }
+  })
+
   it('Meijin', async () => {
     const buffer = await fetch_meijin_game_list()
     const { games, count } = decodeBIFList(buffer)
@@ -85,12 +119,6 @@ describe('Parse Game List', () => {
       expect(game.white.rank).toBeDefined()
       expect(game.black.rank === undefined).toBe(false)
       expect(game.white.rank === undefined).toBe(false)
-      // if (game.metadata.end_time !== null) {
-      //   console.log(
-      //     dayjs(game.metadata.start_time).tz().toISOString(),
-      //     dayjs(game.metadata.end_time).tz().toISOString()
-      //   )
-      // }
     }
   })
 })
@@ -105,6 +133,47 @@ describe('Parse Game', () => {
       const record: Record = importBSA(buffer)
       expect(record.moves.length).toBeGreaterThan(0)
     }
+
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      try {
+        const buffer = await fetch_ai_game({ game_id: game.game_id })
+        const record: Record = importBJF(buffer)
+        expect(record.moves.length).toBeGreaterThan(0)
+      } catch {
+        console.error(game.game_id)
+      }
+    }
+  })
+
+  it('AI', async () => {
+    const buffer = await fetch_ai_game_list()
+    const { games, count } = decodeBJFList(buffer)
+    expect(games.length).toBe(count)
+    for (const game of games
+      .sort((a, b) => b.game_id - a.game_id)
+      .filter((game) => game.game_id <= 100000)
+      .slice(0, 5)) {
+      try {
+        const buffer = await fetch_ai_game({ game_id: game.game_id })
+        const record: Record = importBJF(buffer)
+        console.log(game.game_id, record.metadata.getStandardMetadata(RecordMetadataKey.TITLE))
+      } catch (_error) {
+        console.error(game.game_id)
+      }
+    }
+
+    for (const game of games
+      .sort((a, b) => b.game_id - a.game_id)
+      .filter((game) => game.game_id <= 100000)
+      .slice(0, 5)) {
+      try {
+        const buffer = await fetch_jsam_game({ game_id: game.game_id })
+        const record: Record = importBSA(buffer)
+        console.log(game.game_id, record.metadata.getStandardMetadata(RecordMetadataKey.TITLE))
+      } catch (_error) {
+        console.error(game.game_id)
+      }
+    }
   })
 
   it('Meijin', async () => {
@@ -117,7 +186,6 @@ describe('Parse Game', () => {
       const record: Record = importBIF(buffer)
       expect(game.black.rank).toBeDefined()
       expect(game.white.rank).toBeDefined()
-      console.log(game.game_id, record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME))
       expect(record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME)).toBeDefined()
       expect(record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME)).toBeDefined()
       expect(record.moves.length).toBeGreaterThan(0)

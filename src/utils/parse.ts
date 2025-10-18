@@ -35,14 +35,15 @@ export const parse = (
  * プレイヤー名から名前と段位を分離する関数
  */
 export const parseName = (name: string): { name: string; rank?: string | undefined } => {
-  const pattern = /^(.+?)([四五六七八九]+段|名人|竜王|王位|王座|棋聖|棋王|王将|叡王|[二三四五六七八]+冠)|龍王名人$/
+  const pattern =
+    /^(?<player>.+?)(?<rank>(?:女流)?(?:初|[二三四五六七八九])段|女流(?:[一二]|[12])級|(?:女流)?[二三四五六七八]+冠|竜王名人|(?:女流)?(?:名人|王位|王座|王将)|竜王|棋聖|棋王|叡王|倉敷藤花|白玲|清麗|女王)$/
   const match = name.match(pattern)
 
   if (!match) {
     throw new Error(`Invalid name format: ${name}`)
   }
   return {
-    name: match[1].trim(),
-    rank: match[2].trim()
+    name: match.groups?.player.trim() ?? name,
+    rank: match.groups?.rank.trim()
   }
 }

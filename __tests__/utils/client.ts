@@ -1,4 +1,5 @@
 import iconv from 'iconv-lite'
+import z, { number, string } from 'zod'
 
 export const fetch_jsam_game_list = async (params: { p1: number, p2: number, p3: number } = {
   p1: 0,
@@ -17,6 +18,77 @@ export const fetch_jsam_game_list = async (params: { p1: number, p2: number, p3:
     }
   })
   if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  return Buffer.from(await response.arrayBuffer())
+}
+
+export const fetch_ai_game_list = async (): Promise<Buffer> => {
+  const url: URL = new URL('/ai/ai_game_list.txt', 'https://d2pngvm764jm.cloudfront.net')
+  const response = await fetch(url.href, {
+    headers: {
+      'Authorization': `Basic ${btoa(`${process.env.AI_USERNAME}:${process.env.AI_PASSWORD}`)}`
+    }
+  })
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  return Buffer.from(await response.arrayBuffer())
+}
+
+export const fetch_igoshogi_game_list = async ({
+  type,
+  ki,
+  block
+}: {
+  type: 'g' | 'L',
+  ki: number,
+  block: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'k' | 'K'
+}): Promise<Buffer> => {
+  const url: URL = new URL('/apis/kifu/readKekkaList.php', 'https://www.igoshogi.net')
+  url.searchParams.set("type", type)
+  url.searchParams.set("ki", ki.toString())
+  url.searchParams.set("block", block)
+  const response = await fetch(url.href)
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  return Buffer.from(await response.arrayBuffer())
+}
+
+export const fetch_igoshogi_game = async ({
+  KI,
+  BLOCK,
+  KAI,
+  KYOKU
+}: {
+  KI: number,
+  BLOCK: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'k' | 'K',
+  KAI: number,
+  KYOKU: number
+}): Promise<Buffer> => {
+  const url: URL = new URL('/apis/kifu/readKifuData.php', 'https://www.igoshogi.net')
+  url.searchParams.set("KIFU", `${KI}${BLOCK}0${KAI}0${KYOKU}`)
+  const response = await fetch(url.href, {
+    headers: {
+      Referer: 'https://www.igoshogi.net/'
+    }
+  })
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  return Buffer.from(await response.arrayBuffer())
+}
+
+export const fetch_ai_game = async ({ game_id}: { game_id: number}): Promise<Buffer> => {
+  const url: URL = new URL(`/ai/${game_id}.json`, 'https://d2pngvm764jm.cloudfront.net')
+  const response = await fetch(url.href, {
+    headers: {
+      'Authorization': `Basic ${btoa(`${process.env.AI_USERNAME}:${process.env.AI_PASSWORD}`)}`
+    }
+  })
+  if (!response.ok) {
+    console.error('Failed to fetch AI game:', game_id, response.status, response.statusText)
     throw new Error(response.statusText)
   }
   return Buffer.from(await response.arrayBuffer())
