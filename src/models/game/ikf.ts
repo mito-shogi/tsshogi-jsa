@@ -111,23 +111,33 @@ export const decodeIKFList = (buffer: Buffer): GameInfoList => {
   }
   return {
     games: result.data.kekkas.map((kekka) => {
+      const title = `霧島酒造杯第${kekka.KI}期女流王将戦本戦`
       const black = parseName(kekka.L_KISI_SEN === 1 ? kekka.L_KISI : kekka.L_KISI)
       const white = parseName(kekka.R_KISI_SEN === 1 ? kekka.R_KISI : kekka.R_KISI)
       return {
         game_id: 0,
         key: `L${kekka.KI}0${kekka.KAI}0${kekka.KYOKU}`,
         black: {
-          name: replaceAll(black.name),
-          rank: black.rank
+          first_name: '',
+          last_name: '',
+          name: black.name,
+          rank: black.rank,
+          display_text: `${black.name} (${black.rank})`
         },
         white: {
-          name: replaceAll(white.name),
-          rank: white.rank
+          first_name: '',
+          last_name: '',
+          name: white.name,
+          rank: white.rank,
+          display_text: `${white.name} (${white.rank})`
         },
         metadata: {
           date: dayjs(kekka.TAIKYOKUDATE).tz().format('YYYY/MM/DD'),
-          start_time: kekka.TAIKYOKUDATE,
-          end_time: kekka.TAIKYOKUDATE
+          start_time: kekka.TAIKYOKUDATE || kekka.HOUEIDATE,
+          end_time: kekka.TAIKYOKUDATE,
+          title: title,
+          tournament: '女流王将戦',
+          length: 0
         }
       }
     }),
