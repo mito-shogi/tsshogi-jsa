@@ -38,5 +38,6 @@ export const replaceAll = (str: string): string => {
       .replace(/\u25B3/g, '\u2616')
       .replace(/\u25B2/g, '\u2617')
       .replace(/\uFF5E/g, '\u007E')
+      .replace(/\u30FB/g, '\uFF65')
   )
 }

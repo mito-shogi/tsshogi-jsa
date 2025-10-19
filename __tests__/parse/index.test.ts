@@ -3,15 +3,16 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { type Record, RecordMetadataKey } from 'tsshogi'
+import { exportKIF, type Record, RecordMetadataKey } from 'tsshogi'
 import { decodeBJFList, importBJF } from '../../src/models/game/ai.dto'
-import { decodeIKFList } from '../../src/models/game/ikf.ts'
+import { decodeIKFList, importIKF } from '../../src/models/game/ikf.ts'
 import { decodeBSAList, importBSA } from '../../src/models/game/jsam.dto'
 import { decodeBIFList, importBIF } from '../../src/models/game/meijin.dto'
 
 import {
   fetch_ai_game,
   fetch_ai_game_list,
+  fetch_igoshogi_game,
   fetch_igoshogi_game_list,
   fetch_jsam_game,
   fetch_jsam_game_list,
@@ -86,12 +87,24 @@ describe('Parse Game List', () => {
       type: 'L',
       block: 'k'
     })
-    const { games, count } = decodeIKFList(buffer)
+    const { games, count } = decodeIKFList(buffer, 'L')
     expect(games.length).toBe(count)
-    console.log(games)
-    // for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
-    //   expect(game.game_id).toBeDefined()
-    // }
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      expect(game.game_id).toBeDefined()
+    }
+  })
+
+  it('Ginga', async () => {
+    const buffer = await fetch_igoshogi_game_list({
+      ki: 32,
+      type: 'g',
+      block: 'k'
+    })
+    const { games, count } = decodeIKFList(buffer, 'g')
+    expect(games.length).toBe(count)
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      expect(game.game_id).toBeDefined()
+    }
   })
 
   it('AI', async () => {
@@ -143,6 +156,43 @@ describe('Parse Game', () => {
       } catch {
         console.error(game.game_id)
       }
+    }
+  })
+
+  it('Loushou', async () => {
+    const buffer = await fetch_igoshogi_game_list({
+      ki: 46,
+      type: 'L',
+      block: 'k'
+    })
+    const { games, count } = decodeIKFList(buffer, 'L')
+    expect(games.length).toBe(count)
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      const buffer = await fetch_igoshogi_game({
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        key: game.key!
+      })
+      const record: Record = importIKF(buffer, 'L')
+      expect(game.game_id).toBeDefined()
+      console.log(exportKIF(record))
+    }
+  })
+
+  it('Ginga', async () => {
+    const buffer = await fetch_igoshogi_game_list({
+      ki: 32,
+      type: 'g',
+      block: 'k'
+    })
+    const { games, count } = decodeIKFList(buffer, 'g')
+    expect(games.length).toBe(count)
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      const buffer = await fetch_igoshogi_game({
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        key: game.key!
+      })
+      const _record: Record = importIKF(buffer, 'g')
+      expect(game.game_id).toBeDefined()
     }
   })
 

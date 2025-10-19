@@ -55,9 +55,6 @@ export const importBSA = (buffer: Buffer): Record => {
   if (metadata.time) {
     record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, metadata.time.toString())
   }
-  if (metadata.tournament) {
-    record.metadata.setStandardMetadata(RecordMetadataKey.TOURNAMENT, metadata.tournament)
-  }
   record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, metadata.title)
   return record
 }

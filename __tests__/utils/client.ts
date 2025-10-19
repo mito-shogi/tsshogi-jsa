@@ -57,24 +57,19 @@ export const fetch_igoshogi_game_list = async ({
 }
 
 export const fetch_igoshogi_game = async ({
-  KI,
-  BLOCK,
-  KAI,
-  KYOKU
+  key
 }: {
-  KI: number,
-  BLOCK: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'k' | 'K',
-  KAI: number,
-  KYOKU: number
+  key: string
 }): Promise<Buffer> => {
   const url: URL = new URL('/apis/kifu/readKifuData.php', 'https://www.igoshogi.net')
-  url.searchParams.set("KIFU", `${KI}${BLOCK}0${KAI}0${KYOKU}`)
+  url.searchParams.set("KIFU", key)
   const response = await fetch(url.href, {
     headers: {
       Referer: 'https://www.igoshogi.net/'
     }
   })
   if (!response.ok) {
+    console.error(url.href)
     throw new Error(response.statusText)
   }
   return Buffer.from(await response.arrayBuffer())
