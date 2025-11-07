@@ -3,7 +3,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import iconv from 'iconv-lite'
-import { MessageTypeEnum } from '@/models/message.dto'
+import { MessageTypeEnum } from '@/constant/message_type'
 import { replaceAll, toHankaku } from './convert'
 
 dayjs.extend(utc)
@@ -163,7 +163,8 @@ export const decodeSC = (buffer: Buffer) => {
     const index: number = buffer.indexOf(Buffer.from([0x4b, 0x49]))
     const title_length: number = buffer.readUInt8(index + 0x22)
     const opening_length: number = buffer.readUInt8(index + 0x23 + title_length)
-    const black_index: number = index + 0x28 + title_length + opening_length
+    const black_index: number =
+      index + 0x28 + title_length + (opening_length === 1 || opening_length === 0 ? 0 : opening_length)
     const black_last_name_length: number = buffer.readUInt8(black_index)
     const black_first_name_length: number = buffer.readUInt8(black_index + 0x01 + black_last_name_length)
     const black_rank_length: number = buffer.readUInt8(
@@ -231,7 +232,9 @@ export const decodeSC = (buffer: Buffer) => {
       }
     }
   } catch (error) {
-    console.error('Failed to decode SC:', error)
+    console.error('Failed to decode SC!')
+    console.error('Hex:', buffer.toString('hex'))
+    console.error('Text:', iconv.decode(buffer, 'shift_jis'))
     console.debug(`Decoding SC... Length: ${buffer.length} bytes`)
     // console.debug(buffer.toString('hex'), iconv.decode(buffer, 'shift_jis'))
     throw error
