@@ -1,10 +1,22 @@
 ## @mito-shogi/tsshogi-jsa
 
-本ライブラリは、将棋連盟ライブ中継アプリで配布されている独自形式の棋譜データを、tsshogiのRecord型へとスマートに変換するためのものです。将棋の記録管理や解析を、より洗練された形で行いたい方におすすめです。
+本ライブラリは、独自形式の棋譜データを、tsshogiのRecord型へとスマートに変換するためのものです。将棋の記録管理や解析を、より洗練された形で行いたい方におすすめです。
 
 ### 対応データ
 
 - [x] 将棋連盟ライブ中継アプリ
+- [x] 名人戦棋譜速報
+  - [x] 名人戦
+  - [x] 順位戦
+- [x] 囲碁・将棋チャンネル
+  - [x] 女流王将戦
+  - [x] 銀河戦
+
+| サービス                 | 棋戦               | 一覧          | 棋譜      |
+| ------------------------ | ------------------ | ------------- | --------- |
+| 将棋連盟ライブ中継アプリ | 解説があるもののみ | decodeBSAList | importBSA |
+| 名人戦棋譜速報           | 名人戦/順位戦      | decodeBIFList | importBIF |
+| 囲碁・将棋チャンネル     | 女流王将戦/銀河戦  | decodeIKFList | importIKF |
 
 ### 導入方法
 
@@ -37,13 +49,13 @@ bun add @mito-shogi/tsshogi-jsa
 import { importJSA } from '@mito-shogi/tsshogi-jsa'
 import { Record } from 'tsshogi'
 
-const buffer: Buffer = Buffer.from([]) // 詰将棋パラダイスのテキストデータ
+const buffer: Buffer = Buffer.from(XXXXXX) // fetch等でArrayBufferを取得しておく
 const record: Record | Error = importJSA(buffer)
 if (record instanceof Error) return
 // recordを使って処理
 ```
 
-このようにして、将棋連盟ライブ中継アプリのバイナリ形式の棋譜データをRecord型へ変換できます。
+このようにして、バッファーをバイナリ形式の棋譜データをRecord型へ変換できます。
 
 #### 変換結果の例
 
