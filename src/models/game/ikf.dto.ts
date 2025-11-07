@@ -75,7 +75,7 @@ const KekkaSchema = z
     const black_name = splitName(black.name)
     const white_name = splitName(white.name)
     return {
-      game_id: v.KI * 10000 + v.KAI * 100 + v.KYOKU,
+      game_id: (20500 + v.KI) * 10000 + v.KAI * 100 + v.KYOKU,
       key: `${v.BLOCK}0${v.KAI}0${v.KYOKU}`,
       ki: v.KI,
       black: {

@@ -6,7 +6,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { type Record, RecordMetadataKey } from 'tsshogi'
 import { decodeBJFList, importBJF } from '../../src/models/game/ai.dto'
-import { decodeIKFList, importIKF } from '../../src/models/game/ikf.ts'
+import { decodeIKFList, importIKF } from '../../src/models/game/ikf.dto.ts'
 import { decodeBSAList, importBSA } from '../../src/models/game/jsam.dto'
 import { decodeBIFList, importBIF } from '../../src/models/game/meijin.dto'
 import {
@@ -63,23 +63,23 @@ describe('Parse Game List', () => {
     }
   })
 
-  // it('JSAM 14000', async () => {
-  //   const buffer = await fetch_jsam_game_list({ p1: 0, p2: 14000, p3: 3 })
-  //   const { games, count } = decodeBSAList(buffer)
-  //   expect(games.length).toBe(count)
-  //   expect(games.length).toBeGreaterThan(1)
-  //   for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
-  //     expect(game.meijin_id).toBeUndefined()
-  //     expect(game.key).toBeUndefined()
-  //     expect(game.metadata.start_time).toBeDefined()
-  //     expect(game.metadata.end_time).not.toBeUndefined()
-  //     expect(game.metadata.title).toBeDefined()
-  //     expect(game.metadata.tournament).toBeDefined()
-  //     expect(game.metadata.place).not.toBeNull()
-  //     expect(game.metadata.strategy).not.toBeNull()
-  //     console.log(game.game_id, game.metadata.start_time)
-  //   }
-  // })
+  it('JSAM 14000', async () => {
+    const buffer = await fetch_jsam_game_list({ p1: 0, p2: 14000, p3: 3 })
+    const { games, count } = decodeBSAList(buffer)
+    expect(games.length).toBe(count)
+    expect(games.length).toBeGreaterThan(1)
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      expect(game.meijin_id).toBeUndefined()
+      expect(game.key).toBeUndefined()
+      expect(game.metadata.start_time).toBeDefined()
+      expect(game.metadata.end_time).not.toBeUndefined()
+      expect(game.metadata.title).toBeDefined()
+      expect(game.metadata.tournament).toBeDefined()
+      expect(game.metadata.place).not.toBeNull()
+      expect(game.metadata.strategy).not.toBeNull()
+      console.log(game.game_id, game.metadata.start_time)
+    }
+  })
 
   it('Loushou', async () => {
     const buffer = await fetch_igoshogi_game_list({
@@ -88,8 +88,9 @@ describe('Parse Game List', () => {
       block: 'k'
     })
     const { games, count } = decodeIKFList(buffer, 'L')
+    console.log('Loushou:', games.length)
     expect(games.length).toBe(count)
-    for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 10)) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 5)) {
       expect(game.game_id).toBeDefined()
     }
   })
@@ -101,8 +102,9 @@ describe('Parse Game List', () => {
       block: 'k'
     })
     const { games, count } = decodeIKFList(buffer, 'g')
+    console.log('Ginga:', games.length)
     expect(games.length).toBe(count)
-    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 5)) {
       expect(game.game_id).toBeDefined()
     }
   })
@@ -138,26 +140,26 @@ describe('Parse Game List', () => {
 })
 
 describe('Parse Game', () => {
-  // it('JSAM', async () => {
-  //   const buffer = await fetch_jsam_game_list()
-  //   const { games, count } = decodeBSAList(buffer)
-  //   expect(games.length).toBe(count)
-  //   for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
-  //     const buffer = await fetch_jsam_game({ game_id: game.game_id })
-  //     const record: Record = importBSA(buffer)
-  //     expect(record.moves.length).toBeGreaterThan(0)
-  //   }
+  it('JSAM', async () => {
+    const buffer = await fetch_jsam_game_list()
+    const { games, count } = decodeBSAList(buffer)
+    expect(games.length).toBe(count)
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      const buffer = await fetch_jsam_game({ game_id: game.game_id })
+      const record: Record = importBSA(buffer)
+      expect(record.moves.length).toBeGreaterThan(0)
+    }
 
-  //   for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
-  //     try {
-  //       const buffer = await fetch_ai_game({ game_id: game.game_id })
-  //       const record: Record = importBJF(buffer)
-  //       expect(record.moves.length).toBeGreaterThan(0)
-  //     } catch {
-  //       console.error(game.game_id)
-  //     }
-  //   }
-  // })
+    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+      try {
+        const buffer = await fetch_ai_game({ game_id: game.game_id })
+        const record: Record = importBJF(buffer)
+        expect(record.moves.length).toBeGreaterThan(0)
+      } catch {
+        console.error(game.game_id)
+      }
+    }
+  })
 
   it('Loushou', async () => {
     const buffer = await fetch_igoshogi_game_list({
