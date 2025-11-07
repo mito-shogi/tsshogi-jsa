@@ -4,6 +4,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { RecordMetadataKey } from 'tsshogi'
 import z from 'zod'
+import { MessageTypeEnum } from '@/constant/message_type'
 import { PieceTypeEnum } from '@/constant/piece'
 import { TournamentList } from '@/constant/tournament'
 import { decodeBI, decodeKC, decodeKI, decodeSC } from '@/utils/decode'
@@ -13,8 +14,6 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(customParseFormat)
 dayjs.tz.setDefault('Asia/Tokyo')
-
-export const MessageTypeEnum = z.enum(['KI', 'BI', 'KC', 'CT', 'SC'])
 
 /**
  * 棋譜情報
