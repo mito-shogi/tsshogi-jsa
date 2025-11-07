@@ -66,4 +66,6 @@ jobs:
           MEIJIN_PASSWORD: ${{ secrets.MEIJIN_PASSWORD }}
           JSAM_USERNAME: ${{ secrets.JSAM_USERNAME }}
           JSAM_PASSWORD: ${{ secrets.JSAM_PASSWORD }}
+          AI_USERNAME: ${{ secrets.AI_USERNAME }}
+          AI_PASSWORD: ${{ secrets.AI_PASSWORD }}
           MEIJIN_SESSION: ${{ secrets.MEIJIN_SESSION }}
