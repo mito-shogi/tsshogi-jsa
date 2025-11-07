@@ -190,7 +190,7 @@ describe('Parse Game', () => {
         // biome-ignore lint/style/noNonNullAssertion: reason
         key: game.key!
       })
-      const _record: Record = importIKF(buffer, 'g')
+      doesNotThrow(() => importIKF(buffer, 'g'))
       expect(game.game_id).toBeDefined()
     }
   })
