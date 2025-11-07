@@ -35,3 +35,25 @@ jobs:
         run: npm publish --access public --registry=https://npm.pkg.github.com
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Get Package Version
+        id: package_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.package_version.outputs.version }}
+          release_name: Release v${{ steps.package_version.outputs.version }}
+          body: |
+            新しいバージョン v${{ steps.package_version.outputs.version }} をリリースしました。
+
+            ## 変更内容
+            - パッケージがGitHub Package Registryに公開されました
+
+            ## インストール方法
+            ```bash
+            npm install @mito-shogi/tsshogi-jsa@${{ steps.package_version.outputs.version }}
+            ```
+          draft: false
+          prerelease: false
