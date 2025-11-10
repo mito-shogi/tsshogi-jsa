@@ -212,6 +212,23 @@ describe('Parse Game', () => {
         expect(game.game_id).toBeDefined()
       }
     })
+    it(`Ginga ${ki}`, async () => {
+      const buffer = await fetch_igoshogi_game_list({
+        ki: ki,
+        type: 'g',
+        block: 'A'
+      })
+      const { games, count } = decodeIKFList(buffer, 'g')
+      expect(games.length).toBe(count)
+      for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 1)) {
+        const buffer = await fetch_igoshogi_game({
+          // biome-ignore lint/style/noNonNullAssertion: reason
+          key: game.key!
+        })
+        doesNotThrow(() => importIKF(buffer, 'g'))
+        expect(game.game_id).toBeDefined()
+      }
+    })
   }
 
   it('AI', async () => {
