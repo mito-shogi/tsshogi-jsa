@@ -179,7 +179,12 @@ export const decodeIKFList = (buffer: Buffer, type: 'L' | 'g'): GameInfoList => 
   }
   return {
     games: result.data.kekkas.map(({ kai, kyoku, ki, block, metadata, ...rest }) => {
-      const game_id: number = ((type === 'g' ? 10500 : 20500) + ki) * 10000 + kai * 100 + kyoku
+      // ブロック情報がないとgame_idが一意に定まらない
+      // 棋戦ID + 期数 + ブロックID + 回戦 + 局数
+      // ただし、決勝トーナメントと予選でキーが異なることに注意
+      const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K']
+      const index: number = blocks.indexOf(block.toUpperCase())
+      const game_id: number = ((type === 'g' ? 10500 : 20500) + ki) * 10000 + index * 1000 + kai * 100 + kyoku
       const key: string =
         block.toLocaleLowerCase() === 'k'
           ? `${type}${ki.toString().padStart(2, '0')}${block}${kai.toString().padStart(2, '0')}${kyoku.toString().padStart(2, '0')}`
