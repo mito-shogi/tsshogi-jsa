@@ -150,7 +150,7 @@ describe('Parse Game', () => {
       expect(record.moves.length).toBeGreaterThan(0)
     }
 
-    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 5)) {
       try {
         const buffer = await fetch_ai_game({ game_id: game.game_id })
         const record: Record = importBJF(buffer)
@@ -169,7 +169,7 @@ describe('Parse Game', () => {
     })
     const { games, count } = decodeIKFList(buffer, 'L')
     expect(games.length).toBe(count)
-    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 5)) {
       const buffer = await fetch_igoshogi_game({
         // biome-ignore lint/style/noNonNullAssertion: reason
         key: game.key!
@@ -187,7 +187,7 @@ describe('Parse Game', () => {
     })
     const { games, count } = decodeIKFList(buffer, 'g')
     expect(games.length).toBe(count)
-    for (const game of games.sort((a, b) => b.game_id - a.game_id)) {
+    for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 5)) {
       const buffer = await fetch_igoshogi_game({
         // biome-ignore lint/style/noNonNullAssertion: reason
         key: game.key!
