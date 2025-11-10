@@ -70,8 +70,8 @@ const KekkaSchema = z
     KIFU: z.number().int()
   })
   .transform((v) => {
-    const black = parseName(v.L_KISI_SEN === 1 ? v.L_KISI : v.L_KISI)
-    const white = parseName(v.R_KISI_SEN === 1 ? v.R_KISI : v.R_KISI)
+    const black = parseName(v.L_KISI_SEN === 1 ? replaceAll(v.L_KISI) : replaceAll(v.L_KISI))
+    const white = parseName(v.R_KISI_SEN === 1 ? replaceAll(v.R_KISI) : replaceAll(v.R_KISI))
     const black_name = splitName(black.name)
     const white_name = splitName(white.name)
     return {
