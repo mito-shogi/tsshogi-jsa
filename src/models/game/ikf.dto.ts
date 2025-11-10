@@ -183,6 +183,8 @@ export const decodeIKFList = (buffer: Buffer, type: 'L' | 'g'): GameInfoList => 
       // 棋戦ID + 期数 + ブロックID + 回戦 + 局数
       // ただし、決勝トーナメントと予選でキーが異なることに注意
       const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K']
+      const is_final = block.toUpperCase() === 'K'
+      const title = is_final ? `決勝トーナメント${kai}回戦` : `${block.toUpperCase()}ブロック${kai}回戦`
       const index: number = blocks.indexOf(block.toUpperCase())
       const game_id: number = ((type === 'g' ? 10500 : 20500) + ki) * 10000 + index * 1000 + kai * 100 + kyoku
       const key: string =
@@ -195,7 +197,7 @@ export const decodeIKFList = (buffer: Buffer, type: 'L' | 'g'): GameInfoList => 
         game_id: game_id,
         metadata: {
           ...metadata,
-          title: type === 'L' ? `霧島酒造杯第${ki}期女流王将戦` : `第${ki}期銀河戦`,
+          title: type === 'L' ? `霧島酒造杯第${ki}期女流王将戦 ${title}` : `第${ki}期銀河戦 ${title}`,
           tournament: type === 'L' ? '女流王将戦' : '銀河戦'
         }
       }
