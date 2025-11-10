@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set NPM Scope
         run: echo "SCOPE=@${GITHUB_REPOSITORY_OWNER}" >> $GITHUB_ENV
       - name: Bun
@@ -38,22 +40,38 @@ jobs:
       - name: Get Package Version
         id: package_version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Get Previous Tag
+        id: previous_tag
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=$PREV_TAG" >> $GITHUB_OUTPUT
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          VERSION="${{ steps.package_version.outputs.version }}"
+          PREV_TAG="${{ steps.previous_tag.outputs.tag }}"
+
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            COMMITS=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+
+          cat << EOF > release_notes.md
+          v${VERSION} is released.
+
+          ## Changes
+          ${COMMITS}
+
+          ## How to Install
+          \`\`\`bash
+          npm install @mito-shogi/tsshogi-jsa@${VERSION}
+          \`\`\`
+          EOF
       - name: Create Release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.package_version.outputs.version }}
-          release_name: Release v${{ steps.package_version.outputs.version }}
-          body: |
-            新しいバージョン v${{ steps.package_version.outputs.version }} をリリースしました。
-
-            ## 変更内容
-            - パッケージがGitHub Package Registryに公開されました
-
-            ## インストール方法
-            ```bash
-            npm install @mito-shogi/tsshogi-jsa@${{ steps.package_version.outputs.version }}
-            ```
-          draft: false
-          prerelease: false
+        run: |
+          gh release create "v${{ steps.package_version.outputs.version }}" \
+            --title "Release v${{ steps.package_version.outputs.version }}" \
+            --notes-file release_notes.md
