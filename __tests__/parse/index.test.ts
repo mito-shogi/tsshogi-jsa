@@ -161,9 +161,27 @@ describe('Parse Game', () => {
     }
   })
 
-  it('Loushou', async () => {
+  it('Loushou 46', async () => {
     const buffer = await fetch_igoshogi_game_list({
       ki: 46,
+      type: 'L',
+      block: 'k'
+    })
+    const { games, count } = decodeIKFList(buffer, 'L')
+    expect(games.length).toBe(count)
+    for (const game of games.sort((a, b) => b.game_id - a.game_id).slice(0, 5)) {
+      const buffer = await fetch_igoshogi_game({
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        key: game.key!
+      })
+      expect(game.game_id).toBeDefined()
+      doesNotThrow(() => importIKF(buffer, 'L'))
+    }
+  })
+
+  it('Loushou 45', async () => {
+    const buffer = await fetch_igoshogi_game_list({
+      ki: 45,
       type: 'L',
       block: 'k'
     })
