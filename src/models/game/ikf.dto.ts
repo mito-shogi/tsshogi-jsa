@@ -135,11 +135,44 @@ const KIFSchema = z
  */
 export const importIKF = (buffer: Buffer, type: 'L' | 'g'): Record => {
   const {
-    kekka: { ki, black, white, metadata },
+    kekka: { ki, block, kai, kyoku, black, white, metadata },
     comments
   } = BufferSchema.transform((v) => JSON.parse(iconv.decode(v, 'shift_jis')))
     .pipe(KIFSchema)
     .parse(buffer)
+
+  const is_final = block.toUpperCase() === 'K'
+  const title = (() => {
+    switch (type) {
+      case 'g':
+        switch (is_final) {
+          case true:
+            switch (kai) {
+              case 3:
+                return '準決勝'
+              case 4:
+                return '決勝'
+              default:
+                return `決勝トーナメント${kai}回戦`
+            }
+          default:
+            return `${block.toUpperCase()}ブロック${kai}回戦`
+        }
+      case 'L':
+        switch (kai) {
+          case 3:
+            return '準決勝'
+          case 4:
+            return '挑戦者決定戦'
+          case 5:
+            return `三番勝負第${kyoku}局`
+          default:
+            return `${kai}回戦`
+        }
+      default:
+        return `${kai}回戦`
+    }
+  })()
 
   const record: Record | Error = importCSA(comments.map((comment) => comment.csa).join('\n'))
   if (record instanceof Error) {
@@ -159,7 +192,7 @@ export const importIKF = (buffer: Buffer, type: 'L' | 'g'): Record => {
   }
   record.metadata.setStandardMetadata(
     RecordMetadataKey.TITLE,
-    type === 'L' ? `霧島酒造杯第${ki}期女流王将戦` : `第${ki}期銀河戦`
+    type === 'L' ? `霧島酒造杯第${ki}期女流王将戦 ${title}` : `第${ki}期銀河戦 ${title}`
   )
   return record
 }
