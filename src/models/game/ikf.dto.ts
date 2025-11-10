@@ -53,7 +53,7 @@ const KekkaSchema = z
     TAISENMEI: z.string().nonempty(),
     KEKKA: z.string(),
     KAISETU: z.string().nullable(),
-    KIKITE: z.string(),
+    KIKITE: z.string().nullable(),
     L_KISI: z.string().nonempty(),
     L_KISI_ITI: z.number().int(),
     L_KISI_LBL: z.string().nonempty(),
