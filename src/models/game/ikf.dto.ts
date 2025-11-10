@@ -177,9 +177,10 @@ export const decodeIKFList = (buffer: Buffer, type: 'L' | 'g'): GameInfoList => 
     throw result.error
   }
   return {
-    games: result.data.kekkas.map(({ ki, metadata, ...rest }) => ({
+    games: result.data.kekkas.map(({ ki, game_id, metadata, ...rest }) => ({
       ...rest,
       key: `${type}${ki}${rest.key}`,
+      game_id: type === 'L' ? game_id : game_id - 100000000,
       metadata: {
         ...metadata,
         title: type === 'L' ? `霧島酒造杯第${ki}期女流王将戦` : `第${ki}期銀河戦`,
