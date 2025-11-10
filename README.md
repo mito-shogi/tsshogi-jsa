@@ -14,9 +14,9 @@
 
 | サービス                 | 棋戦               | 一覧          | 棋譜      |
 | ------------------------ | ------------------ | ------------- | --------- |
-| 将棋連盟ライブ中継アプリ | 解説があるもののみ | decodeBSAList | importBSA |
-| 名人戦棋譜速報           | 名人戦/順位戦      | decodeBIFList | importBIF |
-| 囲碁・将棋チャンネル     | 女流王将戦/銀河戦  | decodeIKFList | importIKF |
+| 将棋連盟ライブ中継アプリ | 解説があるもののみ | `decodeBSAList` | `importBSA` |
+| 名人戦棋譜速報           | 名人戦/順位戦      | `decodeBIFList` | `importBIF` |
+| 囲碁・将棋チャンネル     | 女流王将戦/銀河戦  | `decodeIKFList` | `importIKF` |
 
 ### 導入方法
 
