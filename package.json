@@ -1,6 +1,6 @@
 {
   "name": "@mito-shogi/tsshogi-jsa",
-  "version": "0.8.13",
+  "version": "0.8.14",
   "description": "将棋連盟ライブ中継アプリの棋譜データをパースするライブラリです",
   "author": "ultemica",
   "license": "MIT",
