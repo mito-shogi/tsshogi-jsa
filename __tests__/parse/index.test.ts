@@ -1,6 +1,5 @@
 import { beforeAll, describe, expect, it } from 'bun:test'
 import { doesNotThrow } from 'node:assert'
-import { beforeEach } from 'node:test'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
@@ -27,10 +26,6 @@ describe('Parse Game List', () => {
     dayjs.extend(timezone)
     dayjs.extend(customParseFormat)
     dayjs.tz.setDefault('Asia/Tokyo')
-  })
-
-  beforeEach(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
   })
 
   it('JSAM 100', async () => {
