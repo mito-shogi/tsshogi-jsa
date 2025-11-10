@@ -47,7 +47,7 @@ const splitName = (fullName: string): { first_name: string; last_name: string } 
 const KekkaSchema = z
   .object({
     KI: z.number().int(),
-    BLOCK: z.enum(['k', 'K']),
+    BLOCK: z.string().nonempty().max(1),
     KAI: z.number().int(),
     KYOKU: z.number().int(),
     TAISENMEI: z.string().nonempty(),
