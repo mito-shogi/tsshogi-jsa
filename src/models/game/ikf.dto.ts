@@ -75,9 +75,10 @@ const KekkaSchema = z
     const black_name = splitName(black.name)
     const white_name = splitName(white.name)
     return {
-      game_id: (20500 + v.KI) * 10000 + v.KAI * 100 + v.KYOKU,
-      key: `${v.BLOCK}0${v.KAI}0${v.KYOKU}`,
+      kai: v.KAI,
+      kyoku: v.KYOKU,
       ki: v.KI,
+      block: v.BLOCK,
       black: {
         first_name: black_name.first_name,
         last_name: black_name.last_name,
@@ -177,16 +178,23 @@ export const decodeIKFList = (buffer: Buffer, type: 'L' | 'g'): GameInfoList => 
     throw result.error
   }
   return {
-    games: result.data.kekkas.map(({ ki, game_id, metadata, ...rest }) => ({
-      ...rest,
-      key: `${type}${ki}${rest.key}`,
-      game_id: type === 'L' ? game_id : game_id - 100000000,
-      metadata: {
-        ...metadata,
-        title: type === 'L' ? `霧島酒造杯第${ki}期女流王将戦` : `第${ki}期銀河戦`,
-        tournament: type === 'L' ? '女流王将戦' : '銀河戦'
+    games: result.data.kekkas.map(({ kai, kyoku, ki, block, metadata, ...rest }) => {
+      const game_id: number = ((type === 'g' ? 10500 : 20500) + ki) * 10000 + kai * 100 + kyoku
+      const key: string =
+        block.toLocaleLowerCase() === 'k'
+          ? `${type}${ki.toString().padStart(2, '0')}${block}${kai.toString().padStart(2, '0')}${kyoku.toString().padStart(2, '0')}`
+          : `${type}${ki.toString().padStart(2, '0')}${block}${kyoku.toString().padStart(2, '0')}${kai.toString().padStart(2, '0')}`
+      return {
+        ...rest,
+        key: key,
+        game_id: game_id,
+        metadata: {
+          ...metadata,
+          title: type === 'L' ? `霧島酒造杯第${ki}期女流王将戦` : `第${ki}期銀河戦`,
+          tournament: type === 'L' ? '女流王将戦' : '銀河戦'
+        }
       }
-    })),
+    }),
     count: result.data.kekkas.length
   }
 }
