@@ -1,3 +1,0 @@
----
-"**/*.{ts,tsx,css,json}":
-  - bunx @biomejs/biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --colors=off

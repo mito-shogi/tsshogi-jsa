@@ -3,13 +3,19 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import iconv from 'iconv-lite'
-import { exportJKFString, importJKFString, importKIF, type Record, RecordMetadataKey } from 'tsshogi'
+import {
+  exportJKFString,
+  importJKFString,
+  importKIF,
+  type Record,
+  RecordMetadataKey,
+} from 'tsshogi'
 import z from 'zod'
 import { TournamentList } from '@/constant/tournament'
 import { replaceAll, toNormalizeDate } from '@/utils/convert'
 import { parseName } from '@/utils/parse'
 import { BufferSchema } from '../buffer.dto'
-import { type GameInfoList, GameInfoListSchema } from '../list.dto'
+import { type GameInfoList, type GameInfoListInput, GameInfoListSchema } from '../list.dto'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -31,29 +37,36 @@ export const importBIF = (buffer: Buffer): Record => {
   if (record instanceof Error) {
     throw record
   }
-  const start_time: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.START_DATETIME)
+  const start_time: string | undefined = record.metadata.getStandardMetadata(
+    RecordMetadataKey.START_DATETIME,
+  )
   if (start_time) {
     record.metadata.setStandardMetadata(
       RecordMetadataKey.START_DATETIME,
-      dayjs(start_time).subtract(9, 'hours').tz().toISOString()
+      dayjs(start_time).subtract(9, 'hours').tz().toISOString(),
     )
     record.metadata.setStandardMetadata(
       RecordMetadataKey.DATE,
-      dayjs(start_time).subtract(9, 'hours').tz().format('YYYY/MM/DD')
+      dayjs(start_time).subtract(9, 'hours').tz().format('YYYY/MM/DD'),
     )
   }
-  const end_time: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.END_DATETIME)
+  const end_time: string | undefined = record.metadata.getStandardMetadata(
+    RecordMetadataKey.END_DATETIME,
+  )
   if (end_time) {
     record.metadata.setStandardMetadata(
       RecordMetadataKey.END_DATETIME,
-      dayjs(end_time).subtract(9, 'hours').tz().toISOString()
+      dayjs(end_time).subtract(9, 'hours').tz().toISOString(),
     )
   }
-  const time_limit: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.TIME_LIMIT)
+  const time_limit: string | undefined = record.metadata.getStandardMetadata(
+    RecordMetadataKey.TIME_LIMIT,
+  )
   if (time_limit) {
     const match = time_limit.match(/^(\d+)/)
-    if (match) {
-      const value: number = Number.parseInt(match[1], 10)
+    const minutes = match === null ? undefined : match[1]
+    if (minutes !== undefined) {
+      const value: number = Number.parseInt(minutes, 10)
       if (!Number.isNaN(value)) {
         record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, `${value * 60}`)
         record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, `${value * 60}`)
@@ -64,18 +77,23 @@ export const importBIF = (buffer: Buffer): Record => {
   const delay: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.BYOYOMI)
   if (delay) {
     const match = delay.match(/^(\d+)/)
-    if (match) {
-      const value: number = Number.parseInt(match[1], 10)
+    const seconds = match === null ? undefined : match[1]
+    if (seconds !== undefined) {
+      const value: number = Number.parseInt(seconds, 10)
       if (!Number.isNaN(value)) {
         record.metadata.setStandardMetadata(RecordMetadataKey.BYOYOMI, `${value}`)
       }
     }
   }
-  const black_name: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.BLACK_NAME)
+  const black_name: string | undefined = record.metadata.getStandardMetadata(
+    RecordMetadataKey.BLACK_NAME,
+  )
   if (black_name) {
     record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, parseName(black_name).name)
   }
-  const white_name: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.WHITE_NAME)
+  const white_name: string | undefined = record.metadata.getStandardMetadata(
+    RecordMetadataKey.WHITE_NAME,
+  )
   if (white_name) {
     record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, parseName(white_name).name)
   }
@@ -83,15 +101,22 @@ export const importBIF = (buffer: Buffer): Record => {
   if (note) {
     record.metadata.setStandardMetadata(RecordMetadataKey.NOTE, note.replaceAll('\\n', ''))
   }
-  const title: string | undefined = record.metadata.getStandardMetadata(RecordMetadataKey.TOURNAMENT)
+  const title: string | undefined = record.metadata.getStandardMetadata(
+    RecordMetadataKey.TOURNAMENT,
+  )
   if (title) {
-    const tournament: string | undefined = TournamentList.find((t) => t.keys.some((key) => title.includes(key)))?.value
+    const tournament: string | undefined = TournamentList.find((t) =>
+      t.keys.some((key) => title.includes(key)),
+    )?.value
     record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, title)
     if (tournament) {
       record.metadata.setStandardMetadata(RecordMetadataKey.TOURNAMENT, tournament)
     }
   }
-  record.metadata.setStandardMetadata(RecordMetadataKey.LENGTH, (record.moves.length - 2).toString())
+  record.metadata.setStandardMetadata(
+    RecordMetadataKey.LENGTH,
+    (record.moves.length - 2).toString(),
+  )
   return record
 }
 
@@ -109,11 +134,11 @@ const BufferGameSchema = BufferSchema.transform((v) => replaceAll(iconv.decode(v
             line
               .replace(/\s*\/\/.*$/, '')
               .split('=')
-              .map((s) => s.trim())
-          )
-        )
+              .map((s) => s.trim()),
+          ),
+        ),
       ),
-      count: blocks.slice(1, -1).length
+      count: blocks.slice(1, -1).length,
     }
   })
   .pipe(
@@ -127,7 +152,7 @@ const BufferGameSchema = BufferSchema.transform((v) => replaceAll(iconv.decode(v
           end_date: z.preprocess(
             // biome-ignore lint/suspicious/noExplicitAny: reason
             (input: any) => (input.length === 0 ? undefined : input),
-            z.string().nonempty().optional()
+            z.string().nonempty().optional(),
           ),
           kisen: z.string().nonempty(),
           sente: z.string().nonempty(),
@@ -141,50 +166,57 @@ const BufferGameSchema = BufferSchema.transform((v) => replaceAll(iconv.decode(v
           senkei: z.preprocess(
             // biome-ignore lint/suspicious/noExplicitAny: reason
             (input: any) => (input === undefined || input.length === 0 ? undefined : input),
-            z.string().nonempty().optional()
+            z.string().nonempty().optional(),
           ),
-          tesuu: z.coerce.number().int()
-        })
+          tesuu: z.coerce.number().int(),
+        }),
       ),
-      count: z.number().int()
+      count: z.number().int(),
+    }),
+  )
+  .transform((v, ctx): GameInfoListInput => {
+    const games = v.games.map((game) => {
+      const tournament = TournamentList.find((t) =>
+        t.keys.some((key) => game.kisen.includes(key)),
+      )?.value
+      if (tournament === undefined) {
+        ctx.addIssue({ code: 'custom', message: `Unknown tournament: ${game.kisen}` })
+        return z.NEVER
+      }
+      return {
+        game_id: game.game_id,
+        meijin_id: game.meijin_id,
+        key: game.kif_key,
+        black: {
+          first_name: game.name1,
+          last_name: game.family1,
+          rank: game.title1,
+          name: `${game.family1} ${game.name1}`,
+          display_text: `${game.family1} ${game.name1} ${game.title1}`,
+        },
+        white: {
+          first_name: game.name2,
+          last_name: game.family2,
+          rank: game.title2,
+          name: `${game.family2} ${game.name2}`,
+          display_text: `${game.family2} ${game.name2} ${game.title2}`,
+        },
+        metadata: {
+          date: dayjs.tz(game.start_date).format('YYYY/MM/DD'),
+          start_time: toNormalizeDate(game.start_date),
+          end_time: game.end_date === undefined ? null : toNormalizeDate(game.end_date),
+          title: game.kisen,
+          tournament: tournament,
+          length: game.tesuu,
+          strategy: game.senkei,
+        },
+      }
     })
-  )
-  .transform(
-    (v) =>
-      ({
-        games: v.games.map((v) => ({
-          game_id: v.game_id,
-          meijin_id: v.meijin_id,
-          key: v.kif_key,
-          black: {
-            first_name: v.name1,
-            last_name: v.family1,
-            rank: v.title1,
-            name: `${v.family1} ${v.name1}`,
-            display_text: `${v.family1} ${v.name1} ${v.title1}`
-          },
-          white: {
-            first_name: v.name2,
-            last_name: v.family2,
-            rank: v.title2,
-            name: `${v.family2} ${v.name2}`,
-            display_text: `${v.family2} ${v.name2} ${v.title2}`
-          },
-          metadata: {
-            date: dayjs.tz(v.start_date).format('YYYY/MM/DD'),
-            start_time: toNormalizeDate(v.start_date),
-            end_time: v.end_date === undefined ? null : toNormalizeDate(v.end_date),
-            title: v.kisen,
-            tournament: TournamentList.find((t) => t.keys.some((key) => v.kisen.includes(key)))?.value,
-            length: v.tesuu,
-            strategy: v.senkei
-          },
-          kif: null
-        })),
-        count: v.count
-        // biome-ignore lint/suspicious/noExplicitAny: reason
-      }) as any
-  )
+    return {
+      games: games,
+      count: v.count,
+    }
+  })
   .pipe(GameInfoListSchema)
 
 /**

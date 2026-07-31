@@ -8,7 +8,7 @@ import {
   Record,
   RecordMetadataKey,
   SpecialMoveType,
-  Square
+  Square,
 } from 'tsshogi'
 import z from 'zod'
 import { TournamentList } from '@/constant/tournament'
@@ -26,7 +26,7 @@ export const KIFSchema = z.object({
   prmt: z.union([z.number(), z.null()]),
   spend: z.number(),
   move: z.string(),
-  _id: z.string()
+  _id: z.string(),
 })
 
 const GameSchema = z.object({
@@ -42,8 +42,7 @@ const GameSchema = z.object({
   place: z.string(),
   starttime: z.string(),
   realstarttime: z.number(),
-  // biome-ignore lint/suspicious/noExplicitAny: reason
-  endtime: z.preprocess((input: any) => (input.length === 0 ? undefined : input), z.coerce.date().optional()),
+  endtime: z.preprocess((input) => (input === '' ? undefined : input), z.coerce.date().optional()),
   timelimit: z.string(),
   countdown: z.string(),
   spendtime_p1: z.string(),
@@ -65,7 +64,6 @@ const GameSchema = z.object({
   end_mark: z.string(),
   end_reason: z.string(),
   end_side: z.string(),
-  __v: z.number(),
   dinnertime_end_2: z.string(),
   dinnertime_start_2: z.string(),
   handicap: z.string(),
@@ -73,13 +71,24 @@ const GameSchema = z.object({
   lunchtime_start_2: z.string(),
   modified_by: z.string().optional(),
   enddate: z.string().optional(),
-  kif: z.array(KIFSchema)
+  kif: z.array(KIFSchema),
   // breaktime: z.array(z.any())
 })
 
 export const importBJF = (buffer: Buffer): Record => {
   const game = BufferSchema.transform((v) => JSON.parse(replaceAll(iconv.decode(v, 'utf-8'))))
-    .pipe(GameSchema.array().transform((v) => v[0]))
+    .pipe(
+      GameSchema.array()
+        .nonempty()
+        .transform((v, ctx) => {
+          const [head] = v
+          if (head === undefined) {
+            ctx.addIssue({ code: 'custom', message: 'Expected at least one game' })
+            return z.NEVER
+          }
+          return head
+        }),
+    )
     .parse(buffer)
   const position: Position = (() => {
     if (game.handicap === '平手') {
@@ -144,13 +153,18 @@ export const importBJF = (buffer: Buffer): Record => {
     // 消費時間を追加
     record.current.setElapsedMs(kif.spend * 1000)
   }
-  const tournament = TournamentList.find((t) => t.keys.some((key) => game.event.includes(key)))?.value
+  const tournament = TournamentList.find((t) =>
+    t.keys.some((key) => game.event.includes(key)),
+  )?.value
   // const tournament = TournamentList.find((t) => t.keys.some(key) => game.title.includes(key))?.value)
   record.metadata.setStandardMetadata(RecordMetadataKey.TITLE, game.event)
-  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, dayjs(game.starttime).format('YYYY/MM/DD'))
+  record.metadata.setStandardMetadata(
+    RecordMetadataKey.DATE,
+    dayjs(game.starttime).format('YYYY/MM/DD'),
+  )
   record.metadata.setStandardMetadata(
     RecordMetadataKey.START_DATETIME,
-    dayjs(game.starttime).format('YYYY/MM/DD HH:mm:ss')
+    dayjs(game.starttime).format('YYYY/MM/DD HH:mm:ss'),
   )
   record.metadata.setStandardMetadata(RecordMetadataKey.TIME_LIMIT, game.timelimit)
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_TIME_LIMIT, game.timelimit)
@@ -163,7 +177,7 @@ export const importBJF = (buffer: Buffer): Record => {
   if (game.endtime !== undefined) {
     record.metadata.setStandardMetadata(
       RecordMetadataKey.END_DATETIME,
-      dayjs(game.endtime).format('YYYY/MM/DD HH:mm:ss')
+      dayjs(game.endtime).format('YYYY/MM/DD HH:mm:ss'),
     )
   }
   record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, game.place)
@@ -182,12 +196,12 @@ const BufferGameSchema = BufferSchema.transform((v) => replaceAll(iconv.decode(v
       .filter((line) => !line.startsWith('#'))
       .filter((line) => !Number.isNaN(Number.parseInt(line, 10)))
       .map((line) => ({
-        game_id: Number.parseInt(line, 10)
-      }))
+        game_id: Number.parseInt(line, 10),
+      })),
   }))
   .transform((v) => ({
     ...v,
-    count: v.games.length
+    count: v.games.length,
   }))
 
 /**
