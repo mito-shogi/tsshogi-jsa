@@ -23,24 +23,24 @@ const splitName = (fullName: string): { first_name: string; last_name: string } 
     if (trimmed.startsWith(pattern)) {
       return {
         last_name: pattern,
-        first_name: trimmed.slice(pattern.length)
+        first_name: trimmed.slice(pattern.length),
       }
     }
   }
 
-  const parts = trimmed.split(/\s+/).filter(Boolean)
+  const [head, ...rest] = trimmed.split(/\s+/).filter(Boolean)
 
-  if (parts.length >= 2) {
+  if (head !== undefined && rest.length > 0) {
     return {
-      last_name: parts[0],
-      first_name: parts.slice(1).join(' ')
+      last_name: head,
+      first_name: rest.join(' '),
     }
   }
 
   const last_name = trimmed.slice(0, 2)
   return {
     last_name,
-    first_name: trimmed.slice(last_name.length)
+    first_name: trimmed.slice(last_name.length),
   }
 }
 
@@ -67,7 +67,7 @@ const KekkaSchema = z
     HOUEIDATE: z.string().nonempty(),
     TAIKYOKUDATE: z.string().nonempty().nullable(),
     KOKAIDATE: z.string().nonempty(),
-    KIFU: z.number().int()
+    KIFU: z.number().int(),
   })
   .transform((v) => {
     const black = parseName(v.L_KISI_SEN === 1 ? replaceAll(v.L_KISI) : replaceAll(v.L_KISI))
@@ -84,14 +84,14 @@ const KekkaSchema = z
         last_name: black_name.last_name,
         name: `${black_name.last_name} ${black_name.first_name}`,
         rank: black.rank,
-        display_text: `${black_name.last_name} ${black_name.first_name} ${black.rank}`
+        display_text: `${black_name.last_name} ${black_name.first_name} ${black.rank}`,
       },
       white: {
         first_name: white_name.first_name,
         last_name: white_name.last_name,
         name: `${white_name.last_name} ${white_name.first_name}`,
         rank: white.rank,
-        display_text: `${white_name.last_name} ${white_name.first_name} ${white.rank}`
+        display_text: `${white_name.last_name} ${white_name.first_name} ${white.rank}`,
       },
       metadata: {
         date: dayjs(v.TAIKYOKUDATE || v.HOUEIDATE)
@@ -99,16 +99,18 @@ const KekkaSchema = z
           .format('YYYY/MM/DD'),
         start_time: v.TAIKYOKUDATE || v.HOUEIDATE,
         end_time: v.TAIKYOKUDATE,
-        length: 0
-      }
+        length: 0,
+      },
     }
   })
 
-const BufferGameSchema = BufferSchema.transform((v) => JSON.parse(replaceAll(iconv.decode(v, 'shift_jis')))).pipe(
+const BufferGameSchema = BufferSchema.transform((v) =>
+  JSON.parse(replaceAll(iconv.decode(v, 'shift_jis'))),
+).pipe(
   z.object({
     status: z.boolean(),
-    kekkas: z.array(KekkaSchema)
-  })
+    kekkas: z.array(KekkaSchema),
+  }),
 )
 
 const KIFSchema = z
@@ -117,16 +119,16 @@ const KIFSchema = z
     kifus: z.array(
       z.object({
         gyo: z.number().int(),
-        data1: z.string().nonempty()
-      })
+        data1: z.string().nonempty(),
+      }),
     ),
-    kekka: KekkaSchema
+    kekka: KekkaSchema,
   })
   .transform((v) => ({
     ...v,
     comments: v.kifus.map((kifu) => ({
-      csa: kifu.data1.trim()
-    }))
+      csa: kifu.data1.trim(),
+    })),
   }))
 
 /**
@@ -136,7 +138,7 @@ const KIFSchema = z
 export const importIKF = (buffer: Buffer, type: 'L' | 'g'): Record => {
   const {
     kekka: { ki, block, kai, kyoku, black, white, metadata },
-    comments
+    comments,
   } = BufferSchema.transform((v) => JSON.parse(iconv.decode(v, 'shift_jis')))
     .pipe(KIFSchema)
     .parse(buffer)
@@ -180,19 +182,31 @@ export const importIKF = (buffer: Buffer, type: 'L' | 'g'): Record => {
   }
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, black.name)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, white.name)
-  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, dayjs(metadata.start_time).tz().format('YYYY/MM/DD'))
-  record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, dayjs(metadata.start_time).tz().toISOString())
+  record.metadata.setStandardMetadata(
+    RecordMetadataKey.DATE,
+    dayjs(metadata.start_time).tz().format('YYYY/MM/DD'),
+  )
+  record.metadata.setStandardMetadata(
+    RecordMetadataKey.START_DATETIME,
+    dayjs(metadata.start_time).tz().toISOString(),
+  )
   if (metadata.end_time) {
-    record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs(metadata.end_time).tz().toISOString())
+    record.metadata.setStandardMetadata(
+      RecordMetadataKey.END_DATETIME,
+      dayjs(metadata.end_time).tz().toISOString(),
+    )
   }
 
-  record.metadata.setStandardMetadata(RecordMetadataKey.TOURNAMENT, type === 'L' ? '女流王将戦' : '銀河戦')
+  record.metadata.setStandardMetadata(
+    RecordMetadataKey.TOURNAMENT,
+    type === 'L' ? '女流王将戦' : '銀河戦',
+  )
   if (metadata.length) {
     record.metadata.setStandardMetadata(RecordMetadataKey.LENGTH, record.moves.length.toString())
   }
   record.metadata.setStandardMetadata(
     RecordMetadataKey.TITLE,
-    type === 'L' ? `霧島酒造杯第${ki}期女流王将戦 ${title}` : `第${ki}期銀河戦 ${title}`
+    type === 'L' ? `霧島酒造杯第${ki}期女流王将戦 ${title}` : `第${ki}期銀河戦 ${title}`,
   )
   return record
 }
@@ -217,9 +231,12 @@ export const decodeIKFList = (buffer: Buffer, type: 'L' | 'g'): GameInfoList => 
       // ただし、決勝トーナメントと予選でキーが異なることに注意
       const blocks = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K']
       const is_final = block.toUpperCase() === 'K'
-      const title = is_final ? `決勝トーナメント${kai}回戦` : `${block.toUpperCase()}ブロック${kai}回戦`
+      const title = is_final
+        ? `決勝トーナメント${kai}回戦`
+        : `${block.toUpperCase()}ブロック${kai}回戦`
       const index: number = blocks.indexOf(block.toUpperCase())
-      const game_id: number = ((type === 'g' ? 10500 : 20500) + ki) * 10000 + index * 1000 + kai * 100 + kyoku
+      const game_id: number =
+        ((type === 'g' ? 10500 : 20500) + ki) * 10000 + index * 1000 + kai * 100 + kyoku
       const key: string =
         block.toLocaleLowerCase() === 'k'
           ? `${type}${ki.toString().padStart(2, '0')}${block}${kai.toString().padStart(2, '0')}${kyoku.toString().padStart(2, '0')}`
@@ -230,11 +247,12 @@ export const decodeIKFList = (buffer: Buffer, type: 'L' | 'g'): GameInfoList => 
         game_id: game_id,
         metadata: {
           ...metadata,
-          title: type === 'L' ? `霧島酒造杯第${ki}期女流王将戦 ${title}` : `第${ki}期銀河戦 ${title}`,
-          tournament: type === 'L' ? '女流王将戦' : '銀河戦'
-        }
+          title:
+            type === 'L' ? `霧島酒造杯第${ki}期女流王将戦 ${title}` : `第${ki}期銀河戦 ${title}`,
+          tournament: type === 'L' ? '女流王将戦' : '銀河戦',
+        },
       }
     }),
-    count: result.data.kekkas.length
+    count: result.data.kekkas.length,
   }
 }
