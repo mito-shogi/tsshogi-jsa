@@ -20,11 +20,14 @@
     "skipLibCheck": true,
 
     // ライブラリとして型定義を配布するため declaration を出す。
-    // 実体の JS は `bun build` / tsup が生成する。
+    // 実体の JS は `bun build` が生成する。
+    // rootDir を明示しないと出力が dist/src/ に 1 階層深くなり、
+    // package.json の "types": "dist/index.d.ts" と食い違う。
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "sourceMap": true,
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
 
