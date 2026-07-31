@@ -1,6 +1,6 @@
 {
   "name": "@mito-shogi/tsshogi-jsa",
-  "version": "0.8.15",
+  "version": "0.8.16",
   "description": "将棋連盟ライブ中継アプリの棋譜データをパースするライブラリです",
   "author": "ultemica",
   "license": "MIT",
@@ -34,9 +34,8 @@
     "dev": "bun run src/index.ts",
     "build": "bun build src/index.ts --format=esm --target=browser --sourcemap --production --drop=console --drop=debugger --external=tsshogi --outdir dist",
     "build:tsc": "tsc --declaration --outDir dist --target esnext --module esnext --removeComments --emitDeclarationOnly false",
-    "build:tsup": "tsup",
     "build:swc": "swc src -d dist",
-    "postbuild": "tsup src/index.ts --dts-only --format esm --out-dir dist",
+    "postbuild": "tsc && tsc-alias",
     "postbuild:tsc": "esbuild dist/index.js --minify --format=esm --target=esnext --outdir=dist --allow-overwrite",
     "prebuild": "rimraf dist",
     "prebuild:tsc": "rimraf dist",
@@ -45,29 +44,6 @@
     "lint": "bunx --bun biome check",
     "format": "bunx --bun biome check --write",
     "test": "bun test"
-  },
-  "tsup": {
-    "entry": [
-      "src/index.ts"
-    ],
-    "format": [
-      "esm"
-    ],
-    "dts": true,
-    "sourcemap": true,
-    "clean": true,
-    "alias": {
-      "@mito-shogi/tsshogi-jsa": "./src/index.ts"
-    },
-    "minify": true,
-    "bundle": true,
-    "external": [
-      "tsshogi"
-    ],
-    "noExternal": [
-      "dayjs",
-      "iconv-lite"
-    ]
   },
   "dependencies": {},
   "peerDependencies": {
@@ -80,15 +56,14 @@
     "@commitlint/cz-commitlint": "^21.2.0",
     "@types/bun": "^1.3.14",
     "@types/node": "^26.1.2",
-    "dayjs": "^1.11.21",
     "conventional-changelog-conventionalcommits": "^10.2.1",
+    "dayjs": "^1.11.21",
     "esbuild": "^0.28.1",
     "iconv-lite": "^0.7.3",
     "rimraf": "^6.1.3",
     "swc": "^1.0.11",
     "tsc-alias": "^1.9.1",
     "tsshogi": "^2.3.4",
-    "tsup": "^8.5.1",
     "typescript": "^7.0.2",
     "zod": "^4.4.3"
   }
