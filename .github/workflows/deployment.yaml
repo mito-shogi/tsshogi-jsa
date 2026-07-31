@@ -2,14 +2,15 @@ name: Deploy to Package Registry
 on:
   pull_request:
     branches:
-      - develop
       - master
     types: [closed]
   workflow_dispatch:
 jobs:
   deploy:
     name: Deploy to GitHub Package Registry
-    # if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    # closed は merged と declined の両方で発火するため、merged を明示的に絞る。
+    # これが無いと PR を閉じただけで publish が走る。
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -43,7 +44,11 @@ jobs:
       - name: Get Previous Tag
         id: previous_tag
         run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          # 今回のリリース分を除いた直前のタグ。除外しないと、タグが先に
+          # 存在する場合に自分自身を拾って Changes が空になる。
+          PREV_TAG=$(git tag --list 'v*' --sort=-v:refname \
+            | grep -v "^v${{ steps.package_version.outputs.version }}$" \
+            | head -n 1)
           echo "tag=$PREV_TAG" >> $GITHUB_OUTPUT
       - name: Generate Release Notes
         id: release_notes
@@ -73,5 +78,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "v${{ steps.package_version.outputs.version }}" \
+            --target "${{ github.event.pull_request.merge_commit_sha || github.sha }}" \
             --title "Release v${{ steps.package_version.outputs.version }}" \
             --notes-file release_notes.md
