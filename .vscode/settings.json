@@ -1,27 +1,115 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+  // qtmleap/devcontainers のルート baseline に hono-node の stack-specific 設定を
+  // マージしたもの。上流を更新したらこのファイルも追従させること。
+
+  // Editor
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.tabSize": 2,
+  "editor.rulers": [100, 120],
+  "editor.renderWhitespace": "boundary",
+  "editor.guides.bracketPairs": "active",
+  "editor.stickyScroll.enabled": true,
+  "editor.inlineSuggest.enabled": true,
+
+  // Files
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.autoSave": "onFocusChange",
+
+  // Explorer noise reduction
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/target": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/.nuxt": true,
+    "**/.svelte-kit": true,
+    "**/.turbo": true,
+    "**/.wrangler": true,
+    "**/.cache": true,
+    "**/.parcel-cache": true,
+    "**/coverage": true,
+    "**/.nyc_output": true,
+    "**/.tanstack": true
   },
-  "vim.autoSwitchInputMethod.enable": false,
-  "gitdoc.enabled": true,
-  "gitdoc.commitValidationLevel": "none",
-  // "gitdoc.autoCommitDelay": 30000,
-  "gitdoc.autoPush": "onCommit",
-  "gitdoc.ai.model": "gpt-4o",
-  "gitdoc.autoPull": "onPush",
-  "gitdoc.ai.enabled": true,
-  "gitdoc.ai.customInstructions": "Generate a commit message in English following the Conventional Commits specification and `commitlint` rules. Use the format `<type>(<scope>): <short description>` and choose `<type>` from `build`, `ci`, `docs`, `feat`, `fix`, `perf`, `chore`, `refactor`, `revert`, `format`, `test`. Limit `<short description>` to 72 characters. If `<short description>` starts with an English word, it must be in lowercase.",
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/node_modules/**": true,
+    "**/.venv/**": true,
+    "**/target/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/.wrangler/**": true
   },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/target": true,
+    "**/.venv": true,
+    "**/coverage": true,
+    "**/*.gen.ts": true,
+    "**/routeTree.gen.ts": true,
+    "**/bun.lock": true,
+    "**/package-lock.json": true,
+    "**/pnpm-lock.yaml": true,
+    "**/yarn.lock": true,
+    "**/uv.lock": true,
+    "**/poetry.lock": true,
+    "**/Cargo.lock": true
   },
+
+  // File nesting: keep the explorer tidy
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, bun.lock, bun.lockb, .npmrc, .nvmrc, .node-version, tsconfig*.json, biome.json, .biomeignore, .prettier*, .eslintrc*, vite.config*, vitest.config*, wrangler.toml, wrangler.jsonc",
+    "pyproject.toml": "uv.lock, poetry.lock, requirements*.txt, .python-version, ruff.toml, .ruff.toml, mypy.ini",
+    "Cargo.toml": "Cargo.lock, rust-toolchain*, rustfmt.toml, .cargo/config.toml",
+    "Package.swift": "Package.resolved, .swift-version, .swiftformat",
+    "Dockerfile": "compose.yaml, compose.*.yaml, docker-compose.yml, docker-compose.*.yml, .dockerignore",
+    ".gitignore": ".gitattributes",
+    "README.md": "CHANGELOG.md, LICENSE*, CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, AUTHORS*",
+    "*.ts": "$(capture).test.ts, $(capture).spec.ts, $(capture).d.ts",
+    "*.tsx": "$(capture).test.tsx, $(capture).spec.tsx, $(capture).module.css"
+  },
+
+  // Diff
+  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.renderSideBySide": true,
+
+  // Git
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.pruneOnFetch": true,
+  "git.branchProtection": ["main", "master", "develop"],
+
+  // Terminal
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.defaultProfile.linux": "zsh",
+
+  // Formatters
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[json]": {
@@ -30,5 +118,16 @@
   "[jsonc]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "remote.autoForwardPortsFallback": 0
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false,
+    "files.trimTrailingWhitespace": false
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

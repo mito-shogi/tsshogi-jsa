@@ -4,9 +4,9 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { importCSA, type Record, RecordMetadataKey } from 'tsshogi'
 import z from 'zod'
-import { parse } from '@/utils/parse'
+import { markerIndexes, parse } from '@/utils/parse'
 import { BufferSchema } from '../buffer.dto'
-import { type GameInfoList, GameInfoListSchema } from '../list.dto'
+import { type GameInfoList, type GameInfoListInput, GameInfoListSchema } from '../list.dto'
 import { BIObjectSchema, KCObjectSchema, KIObjectSchema, SCObjectSchema } from '../message.dto'
 
 dayjs.extend(utc)
@@ -25,8 +25,8 @@ export const importBSA = (buffer: Buffer): Record => {
         metadata: KIObjectSchema,
         black: BIObjectSchema,
         white: BIObjectSchema,
-        comments: z.array(KCObjectSchema).nonempty()
-      })
+        comments: z.array(KCObjectSchema).nonempty(),
+      }),
     )
     .parse(buffer)
   const record: Record | Error = importCSA(comments.map((comment) => comment.csa).join('\n'))
@@ -35,10 +35,19 @@ export const importBSA = (buffer: Buffer): Record => {
   }
   record.metadata.setStandardMetadata(RecordMetadataKey.BLACK_NAME, black.name)
   record.metadata.setStandardMetadata(RecordMetadataKey.WHITE_NAME, white.name)
-  record.metadata.setStandardMetadata(RecordMetadataKey.DATE, dayjs(metadata.start_time).tz().format('YYYY/MM/DD'))
-  record.metadata.setStandardMetadata(RecordMetadataKey.START_DATETIME, dayjs(metadata.start_time).tz().toISOString())
+  record.metadata.setStandardMetadata(
+    RecordMetadataKey.DATE,
+    dayjs(metadata.start_time).tz().format('YYYY/MM/DD'),
+  )
+  record.metadata.setStandardMetadata(
+    RecordMetadataKey.START_DATETIME,
+    dayjs(metadata.start_time).tz().toISOString(),
+  )
   if (metadata.end_time) {
-    record.metadata.setStandardMetadata(RecordMetadataKey.END_DATETIME, dayjs(metadata.end_time).tz().toISOString())
+    record.metadata.setStandardMetadata(
+      RecordMetadataKey.END_DATETIME,
+      dayjs(metadata.end_time).tz().toISOString(),
+    )
   }
   if (metadata.place) {
     record.metadata.setStandardMetadata(RecordMetadataKey.PLACE, metadata.place)
@@ -60,47 +69,41 @@ export const importBSA = (buffer: Buffer): Record => {
 }
 
 const BufferGameSchema = BufferSchema.transform((v) => {
-  let index = 0
   const BUFFER_OFFSET: number = 6
-  const games: Buffer[] = []
-  // biome-ignore lint/suspicious/noAssignInExpressions: reason
-  while ((index = v.indexOf(Buffer.from([0x4b, 0x49]), index + 1)) !== -1) {
-    // 長さを取得する
-    const length: number = v.readUInt32BE(index + 2)
-    if (v.slice(index, index + length + BUFFER_OFFSET).length >= length) {
-      if (index + length + BUFFER_OFFSET <= v.length) {
-        games.push(v.slice(index, index + length + BUFFER_OFFSET))
-      }
-    }
-  }
+  const games: Buffer[] = Array.from(markerIndexes(v, Buffer.from([0x4b, 0x49])))
+    .map((index) => ({ index, end: index + v.readUInt32BE(index + 2) + BUFFER_OFFSET }))
+    .filter(({ end }) => end <= v.length)
+    .map(({ index, end }) => v.subarray(index, end))
   return {
     games: games,
-    count: games.length
+    count: games.length,
   }
 })
   .pipe(
     z.object({
       games: z.array(
-        SCObjectSchema.transform((v) => ({
-          game_id: v.game_id,
-          meijin_id: undefined,
-          key: undefined,
-          black: v.black,
-          white: v.white,
-          metadata: {
-            date: dayjs.tz(v.start_time).format('YYYY/MM/DD'),
-            start_time: v.start_time,
-            end_time: v.end_time,
-            title: v.title,
-            tournament: v.tournament,
-            length: v.moves
-          },
-          kif: null
-        }))
+        SCObjectSchema.transform((v, ctx): GameInfoListInput['games'][number] => {
+          if (v.tournament === undefined) {
+            ctx.addIssue({ code: 'custom', message: `Unknown tournament: ${v.title}` })
+            return z.NEVER
+          }
+          return {
+            game_id: v.game_id,
+            black: v.black,
+            white: v.white,
+            metadata: {
+              date: dayjs.tz(v.start_time).format('YYYY/MM/DD'),
+              start_time: v.start_time,
+              end_time: v.end_time,
+              title: v.title,
+              tournament: v.tournament,
+              length: v.moves,
+            },
+          }
+        }),
       ),
-      count: z.number().int()
-      // biome-ignore lint/suspicious/noExplicitAny: reason
-    }) as any
+      count: z.number().int(),
+    }),
   )
   .pipe(GameInfoListSchema)
 
