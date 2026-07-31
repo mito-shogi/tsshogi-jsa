@@ -1,65 +1,75 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "plugins": [
+    "./biome-plugins/no-bare-z-string.grit",
+    "./biome-plugins/no-let.grit",
+    "./biome-plugins/no-new-date.grit",
+    "./biome-plugins/no-nullish-coalescing.grit",
+    "./biome-plugins/no-or-fallback.grit",
+    "./biome-plugins/no-tri-state-z-array.grit",
+    "./biome-plugins/no-tri-state-z-boolean.grit",
+    "./biome-plugins/no-type-assertion.grit",
+    "./biome-plugins/no-while-loop.grit",
+    "./biome-plugins/prefer-z-nonempty.grit",
+    "./biome-plugins/prefer-z-safe-parse.grit",
+    "./biome-plugins/prefer-z-url.grit",
+    "./biome-plugins/prefer-z-uuid.grit"
+  ],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
+    "ignoreUnknown": true,
     "includes": [
-      "src/**/*.ts",
-      "src/**/*.tsx",
-      "src/**/*.js",
-      "src/**/*.jsx",
-      "__tests__/**/*.test.ts",
-      "__tests__/**/*.spec.ts"
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.json",
+      "**/*.jsonc",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/build",
+      "!**/coverage",
+      "!**/*.gen.ts"
     ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "all",
+      "arrowParentheses": "always"
+    }
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
-      "correctness": {},
-      "a11y": {},
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn"
+      },
       "style": {
-        "noParameterAssign": "error",
-        "useAsConstAssertion": "error",
-        "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
-        "useSelfClosingElements": "error",
-        "useSingleVarDeclarator": "error",
-        "noUnusedTemplateLiteral": "error",
-        "useNumberNamespace": "error",
-        "noInferrableTypes": "error",
-        "noUselessElse": "error"
+        "useConst": "error",
+        "useTemplate": "warn"
       }
     }
   },
-  "formatter": {
-    "enabled": true,
-    "formatWithErrors": false,
-    "attributePosition": "auto",
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineEnding": "lf",
-    "lineWidth": 100
-  },
-  "javascript": {
-    "formatter": {
-      "enabled": true,
-      "arrowParentheses": "always",
-      "bracketSameLine": false,
-      "bracketSpacing": true,
-      "jsxQuoteStyle": "single",
-      "quoteStyle": "single",
-      "quoteProperties": "asNeeded",
-      "semicolons": "asNeeded",
-      "indentStyle": "space",
-      "indentWidth": 2,
-      "lineWidth": 120,
-      "trailingCommas": "none"
-    }
-  },
-  "json": {
-    "formatter": {
-      "enabled": true,
-      "trailingCommas": "none"
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
     }
   }
 }

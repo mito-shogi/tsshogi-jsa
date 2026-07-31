@@ -12,5 +12,5 @@ export enum PieceTypeEnum {
   NK = 11,
   NG = 12,
   UM = 14,
-  RY = 15
+  RY = 15,
 }

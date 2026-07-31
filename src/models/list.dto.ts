@@ -5,7 +5,7 @@ export const PlayerInfoSchema = z.object({
   last_name: z.string().nonempty(),
   rank: z.string().nonempty().optional(),
   name: z.string().nonempty(),
-  display_text: z.string().nonempty()
+  display_text: z.string().nonempty(),
 })
 
 export const MetadataInfo = z.object({
@@ -16,7 +16,7 @@ export const MetadataInfo = z.object({
   tournament: z.string().nonempty(),
   length: z.number().min(0),
   place: z.string().nonempty().optional(),
-  strategy: z.string().nonempty().optional()
+  strategy: z.string().nonempty().optional(),
 })
 
 export const GameInfoListSchema = z.object({
@@ -27,10 +27,11 @@ export const GameInfoListSchema = z.object({
       key: z.string().optional(),
       black: PlayerInfoSchema,
       white: PlayerInfoSchema,
-      metadata: MetadataInfo
-    })
+      metadata: MetadataInfo,
+    }),
   ),
-  count: z.number().int()
+  count: z.number().int(),
 })
 
 export type GameInfoList = z.infer<typeof GameInfoListSchema>
+export type GameInfoListInput = z.input<typeof GameInfoListSchema>

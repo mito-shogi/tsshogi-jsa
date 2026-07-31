@@ -35,6 +35,7 @@ export enum Tournament {
   YAMADA = 'YAMADAチャレンジ杯',
   F_YAMADA = 'YAMADA女流チャレンジ杯',
   ABEMA = 'AbemaTVトーナメント',
+  ABEMA_REGIONAL = 'ABEMA地域対抗戦',
   ABEMA_SPECIAL = 'AbemaTV特別企画',
   DENOU_TOURNAMENT = '電王トーナメント',
   SETAGAYA = '世田谷花みず木女流オープン',
@@ -54,7 +55,8 @@ export enum Tournament {
   TENDO = '天童将棋祭り',
   TENDO_SAKURA = '天童桜まつり',
   YOKOHAMA = '横浜将棋まつり',
-  SAIYUKI = '西遊棋'
+  SAIYUKI = '西遊棋',
+  SHOGI_FES = '将棋フェス',
 }
 
 // 大会名のリスト（検索用）
@@ -86,7 +88,16 @@ export const TournamentList: { keys: string[]; value: Tournament }[] = [
   { keys: ['達人戦'], value: Tournament.TATSUJIN },
   { keys: ['新人王戦'], value: Tournament.SINJIN },
   { keys: ['加古川青流戦'], value: Tournament.KAKOGAWA },
-  { keys: ['ABEMAトーナメント', 'Abemaトーナメント', 'AbemaTVトーナメント'], value: Tournament.ABEMA },
+  // 地域対抗戦は個人戦とは別大会。「ABEMAトーナメント」より前に置かないと
+  // 「ABEMA地域トーナメント」が個人戦として誤判定される
+  {
+    keys: ['ABEMA地域トーナメント', 'Abema地域トーナメント', 'ABEMA地域対抗戦'],
+    value: Tournament.ABEMA_REGIONAL,
+  },
+  {
+    keys: ['ABEMAトーナメント', 'Abemaトーナメント', 'AbemaTVトーナメント'],
+    value: Tournament.ABEMA,
+  },
   { keys: ['AbemaTV特別企画', 'AbemaTV新春女流企画'], value: Tournament.ABEMA_SPECIAL },
   { keys: ['将棋オールスター', 'SUNTORY東西対抗戦'], value: Tournament.SUNTORY },
   { keys: ['白玲戦'], value: Tournament.HAKURAI },
@@ -114,5 +125,6 @@ export const TournamentList: { keys: string[]; value: Tournament }[] = [
   { keys: ['横浜将棋まつり'], value: Tournament.YOKOHAMA },
   { keys: ['関西女流棋士フェスタ'], value: Tournament.KANSAI_FEST },
   { keys: ['天童桜まつり'], value: Tournament.TENDO_SAKURA },
-  { keys: ['次の一手名人戦'], value: Tournament.NEXT_MOVE }
+  { keys: ['次の一手名人戦'], value: Tournament.NEXT_MOVE },
+  { keys: ['将棋フェス'], value: Tournament.SHOGI_FES },
 ]

@@ -25,7 +25,7 @@ export const KISchema = z.object({
   start_time: z.string().nonempty(),
   end_time: z.string().nonempty().nullable(),
   title: z.string().nonempty(),
-  moves: z.number().int().min(0).max(512)
+  moves: z.number().int().min(0).max(512),
 })
 
 export type KI = z.infer<typeof KISchema>
@@ -33,12 +33,12 @@ export type KI = z.infer<typeof KISchema>
 export const KITransform = KISchema.extend({
   time: z.number().int(),
   strategy: z.string().or(z.undefined()),
-  place: z.string().nonempty().or(z.undefined())
+  place: z.string().nonempty().or(z.undefined()),
 })
   .transform((v) => ({
     ...v,
     tournament: ((): string | undefined =>
-      TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value)()
+      TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value)(),
   }))
   .transform((v) => ({
     ...v,
@@ -46,59 +46,59 @@ export const KITransform = KISchema.extend({
       const metadata = [
         {
           key: RecordMetadataKey.TITLE,
-          value: v.title
+          value: v.title,
         },
         {
           key: RecordMetadataKey.DATE,
-          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz().format('YYYY/MM/DD')
+          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz().format('YYYY/MM/DD'),
         },
         {
           key: RecordMetadataKey.START_DATETIME,
-          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz().toISOString()
+          value: dayjs(v.start_time, 'YYYYMMDDHHmm').tz().toISOString(),
         },
         {
           key: RecordMetadataKey.TIME_LIMIT,
-          value: v.time.toString()
+          value: v.time.toString(),
         },
         {
           key: RecordMetadataKey.BLACK_TIME_LIMIT,
-          value: v.time.toString()
+          value: v.time.toString(),
         },
         {
           key: RecordMetadataKey.WHITE_TIME_LIMIT,
-          value: v.time.toString()
+          value: v.time.toString(),
         },
         {
           key: RecordMetadataKey.LENGTH,
-          value: v.moves.toString()
-        }
+          value: v.moves.toString(),
+        },
       ]
       if (v.tournament) {
         metadata.push({
           key: RecordMetadataKey.TOURNAMENT,
-          value: v.tournament
+          value: v.tournament,
         })
       }
       if (v.end_time) {
         metadata.push({
           key: RecordMetadataKey.END_DATETIME,
-          value: dayjs(v.end_time, 'YYYYMMDDHHmm').tz().toISOString()
+          value: dayjs(v.end_time, 'YYYYMMDDHHmm').tz().toISOString(),
         })
       }
       if (v.place) {
         metadata.push({
           key: RecordMetadataKey.PLACE,
-          value: v.place
+          value: v.place,
         })
       }
       if (v.strategy) {
         metadata.push({
           key: RecordMetadataKey.STRATEGY,
-          value: v.strategy
+          value: v.strategy,
         })
       }
       return metadata
-    })()
+    })(),
   }))
 
 export const KIObjectSchema = BufferSchema.transform(decodeKI).pipe(KITransform)
@@ -109,12 +109,12 @@ export const PlayerSchema = z
   .object({
     first_name: z.string(),
     last_name: z.string().nonempty(),
-    rank: z.string()
+    rank: z.string(),
   })
   .transform((v) => ({
     ...v,
     name: `${v.last_name} ${v.first_name}`,
-    display_text: `${v.last_name} ${v.first_name} ${v.rank}`
+    display_text: `${v.last_name} ${v.first_name} ${v.rank}`,
   }))
 
 export type Player = z.infer<typeof PlayerSchema>
@@ -125,11 +125,11 @@ export type Player = z.infer<typeof PlayerSchema>
 export const SCSchema = KISchema.extend({
   type: z.literal(MessageTypeEnum.enum.SC),
   black: PlayerSchema,
-  white: PlayerSchema
+  white: PlayerSchema,
 }).transform((v) => ({
   ...v,
   tournament: ((): string | undefined =>
-    TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value)()
+    TournamentList.find((t) => t.keys.some((key) => v.title.includes(key)))?.value)(),
 }))
 export type SC = z.infer<typeof SCSchema>
 
@@ -144,7 +144,7 @@ export const BISchema = z
     length: z.number().int().min(0),
     is_black: z.boolean(),
     last_name: z.string().nonempty(),
-    first_name: z.string()
+    first_name: z.string(),
   })
   .transform((v) => ({
     ...v,
@@ -153,11 +153,11 @@ export const BISchema = z
       const metadata = [
         {
           key: v.is_black ? RecordMetadataKey.BLACK_NAME : RecordMetadataKey.WHITE_NAME,
-          value: `${v.last_name} ${v.first_name}`
-        }
+          value: `${v.last_name} ${v.first_name}`,
+        },
       ]
       return metadata
-    })()
+    })(),
   }))
 export type BI = z.infer<typeof BISchema>
 
@@ -175,10 +175,10 @@ export const KCSchema = z
     consumed_time: z.number().int().min(0),
     position: z.object({
       prev: z.number().int().min(0),
-      next: z.number().int().min(0)
+      next: z.number().int().min(0),
     }),
     piece: z.number().int(),
-    comment: z.string()
+    comment: z.string(),
   })
   .transform((v) => ({
     ...v,
@@ -188,7 +188,10 @@ export const KCSchema = z
         return ['PI', '+'].join('\n')
       }
       if (v.piece === 0) {
-        return ['%TORYO', v.comment.length === 0 ? [] : v.comment.split('\n').map((line) => `'*${line}`)]
+        return [
+          '%TORYO',
+          v.comment.length === 0 ? [] : v.comment.split('\n').map((line) => `'*${line}`),
+        ]
           .flat()
           .join('\n')
       }
@@ -198,11 +201,11 @@ export const KCSchema = z
       return [
         `${prefix}${prev}${next}${PieceTypeEnum[v.piece]}`,
         `T${v.consumed_time}`,
-        v.comment.length === 0 ? [] : v.comment.split('\n').map((line) => `'*${line}`)
+        v.comment.length === 0 ? [] : v.comment.split('\n').map((line) => `'*${line}`),
       ]
         .flat()
         .join('\n')
-    })()
+    })(),
   }))
 export type KC = z.infer<typeof KCSchema>
 
@@ -212,5 +215,5 @@ export const KCObjectSchema = BufferSchema.transform(decodeKC).pipe(KCSchema)
  * 不明
  */
 export const CTSchema = z.object({
-  type: z.literal(MessageTypeEnum.enum.CT)
+  type: z.literal(MessageTypeEnum.enum.CT),
 })

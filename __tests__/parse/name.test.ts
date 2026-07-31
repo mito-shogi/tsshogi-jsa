@@ -36,7 +36,7 @@ describe('parseName', () => {
     '香川愛生女流王将',
     '加藤桃子女王',
     '加藤桃子奨励会初段',
-    '加藤桃子清麗'
+    '加藤桃子清麗',
   ]
 
   for (const name of names) {
