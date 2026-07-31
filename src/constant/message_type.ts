@@ -5,7 +5,7 @@ export enum MessageType {
   BI = 'BI',
   KC = 'KC',
   CT = 'CT',
-  SC = 'SC'
+  SC = 'SC',
 }
 
 export const MessageTypeEnum = z.enum(['KI', 'BI', 'KC', 'CT', 'SC'])

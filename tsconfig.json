@@ -1,23 +1,37 @@
 {
   "compilerOptions": {
-    "target": "ES2024", // 出力するJavaScriptのバージョン
-    "module": "esnext",
-    "moduleResolution": "node", // モジュール解決の戦略
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ESNext"],
+    "types": ["bun"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+
+    // ライブラリとして型定義を配布するため declaration を出す。
+    // 実体の JS は `bun build` / tsup が生成する。
+    "declaration": true,
+    "declarationMap": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "./dist", // 型定義ファイルの出力先ディレクトリ
-    "outDir": "./dist", // 出力先ディレクトリ
-    "strict": true, // 厳格な型チェックを有効にする
-    "esModuleInterop": true, // CommonJSモジュールとの互換性を提供する
-    "skipLibCheck": true, // 型定義ファイルの型チェックをスキップする
-    "forceConsistentCasingInFileNames": true, // ファイル名の大文字小文字の一貫性を保つ
-    "declaration": true, // 型定義ファイルを生成する
-    "declarationMap": true, // 型定義ファイルのマップを生成する
-    "sourceMap": true, // ソースマップを生成する
-    "baseUrl": "./",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts"], // コンパイルするファイルを指定
-  "exclude": ["node_modules", ".devcontainer", "__tests__"] // 除外するディレクトリ
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", ".devcontainer", "__tests__"]
 }
