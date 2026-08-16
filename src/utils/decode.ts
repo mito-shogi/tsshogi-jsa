@@ -188,11 +188,10 @@ export const decodeSC = (buffer: Buffer) => {
     const index: number = buffer.indexOf(Buffer.from([0x4b, 0x49]))
     const title_length: number = buffer.readUInt8(index + 0x22)
     const opening_length: number = buffer.readUInt8(index + 0x23 + title_length)
-    const black_index: number =
-      index +
-      0x28 +
-      title_length +
-      (opening_length === 1 || opening_length === 0 ? 0 : opening_length)
+    // opening_length が 0 または 1 のレコードには戦型のデータバイトが無い
+    const opening_data_length: number =
+      opening_length === 1 || opening_length === 0 ? 0 : opening_length
+    const black_index: number = index + 0x28 + title_length + opening_data_length
     const black_last_name_length: number = buffer.readUInt8(black_index)
     const black_first_name_length: number = buffer.readUInt8(
       black_index + 0x01 + black_last_name_length,
@@ -219,7 +218,9 @@ export const decodeSC = (buffer: Buffer) => {
       0x01, // タイトルの長さ
       title_length, // タイトル
       0x01, // 戦型の長さ
-      opening_length, // 戦型
+      // 戦型。長さフィールドと同じ解釈で切らないと、以降のフィールドが
+      // 1 バイトずれて対局者名に制御文字が混入する
+      opening_data_length,
       0x01, // 不明
       0x01, // 不明
       0x02, // 持ち時間
