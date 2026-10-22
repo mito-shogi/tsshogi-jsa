@@ -57,6 +57,8 @@ export enum Tournament {
   YOKOHAMA = '横浜将棋まつり',
   SAIYUKI = '西遊棋',
   SHOGI_FES = '将棋フェス',
+  HONOO_ROKUBAN = '炎の六番勝負',
+  KUMAMOTO_RECOVERY = '熊本地震復興支援イベント',
 }
 
 // 大会名のリスト（検索用）
@@ -127,4 +129,6 @@ export const TournamentList: { keys: string[]; value: Tournament }[] = [
   { keys: ['天童桜まつり'], value: Tournament.TENDO_SAKURA },
   { keys: ['次の一手名人戦'], value: Tournament.NEXT_MOVE },
   { keys: ['将棋フェス'], value: Tournament.SHOGI_FES },
+  { keys: ['炎の六番勝負'], value: Tournament.HONOO_ROKUBAN },
+  { keys: ['熊本地震復興支援イベント'], value: Tournament.KUMAMOTO_RECOVERY },
 ]
