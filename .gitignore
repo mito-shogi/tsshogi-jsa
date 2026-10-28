@@ -227,3 +227,6 @@ $RECYCLE.BIN/
 # === Act (GitHub Actions local runner) ===
 .secrets
 !.secrets.example
+
+# Local Codex configuration, credentials, and session state.
+/.codex/
